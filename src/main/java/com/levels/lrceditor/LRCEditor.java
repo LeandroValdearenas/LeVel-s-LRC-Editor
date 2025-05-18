@@ -315,7 +315,7 @@ public class LRCEditor extends javax.swing.JFrame {
             }
             JOptionPane.showMessageDialog(null, "Successfully wrote to the file.");
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "An error ocurred: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "An error occurred: " + e.getMessage());
         }
     }
     
