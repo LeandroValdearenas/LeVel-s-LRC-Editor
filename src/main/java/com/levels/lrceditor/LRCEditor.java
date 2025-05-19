@@ -39,7 +39,7 @@ public class LRCEditor extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
-        btnSelect = new javax.swing.JButton();
+        btnOpenFile = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         listLyrics = new javax.swing.JList<>();
         txtTimestamp = new javax.swing.JTextField();
@@ -47,6 +47,16 @@ public class LRCEditor extends javax.swing.JFrame {
         btnSave = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         btnSaveLRC = new javax.swing.JButton();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        menuFile = new javax.swing.JMenu();
+        menuINewFile = new javax.swing.JMenuItem();
+        menuIOpenFile = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        menuISaveFile = new javax.swing.JMenuItem();
+        menuISaveFileAs = new javax.swing.JMenuItem();
+        menuTools = new javax.swing.JMenu();
+        menuIChangeTimestamps = new javax.swing.JMenuItem();
+        menuPreferences = new javax.swing.JMenu();
 
         fileChooser.setDialogTitle("Select your LRC file");
 
@@ -61,12 +71,13 @@ public class LRCEditor extends javax.swing.JFrame {
 
         jSeparator1.setForeground(new java.awt.Color(22, 106, 255));
 
-        btnSelect.setBackground(new java.awt.Color(147, 228, 255));
-        btnSelect.setForeground(new java.awt.Color(0, 107, 149));
-        btnSelect.setText("Select LRC file");
-        btnSelect.addActionListener(new java.awt.event.ActionListener() {
+        btnOpenFile.setBackground(new java.awt.Color(147, 228, 255));
+        btnOpenFile.setForeground(new java.awt.Color(0, 107, 149));
+        btnOpenFile.setText("Open LRC file");
+        btnOpenFile.setToolTipText("Open a pre-existing .lrc file to start editing");
+        btnOpenFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSelectActionPerformed(evt);
+                btnOpenFileActionPerformed(evt);
             }
         });
 
@@ -85,9 +96,14 @@ public class LRCEditor extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(listLyrics);
 
+        txtTimestamp.setToolTipText("Current line's timestamp, formatted: [00:00.000]");
+
+        txtLyric.setToolTipText("Current line");
+
         btnSave.setBackground(new java.awt.Color(47, 255, 115));
         btnSave.setForeground(new java.awt.Color(0, 114, 29));
         btnSave.setText("Save");
+        btnSave.setToolTipText("Save the line in the provided timestamp. (If the timestamp already exists, the line will be replaced.)");
         btnSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSaveActionPerformed(evt);
@@ -97,6 +113,7 @@ public class LRCEditor extends javax.swing.JFrame {
         btnDelete.setBackground(new java.awt.Color(218, 0, 57));
         btnDelete.setForeground(new java.awt.Color(255, 222, 222));
         btnDelete.setText("Delete");
+        btnDelete.setToolTipText("Delete the selected line.");
         btnDelete.setEnabled(false);
         btnDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -105,8 +122,9 @@ public class LRCEditor extends javax.swing.JFrame {
         });
 
         btnSaveLRC.setBackground(new java.awt.Color(248, 255, 130));
-        btnSaveLRC.setForeground(new java.awt.Color(107, 56, 0));
-        btnSaveLRC.setText("SAVE LRC FILE");
+        btnSaveLRC.setText("Save LRC file");
+        btnSaveLRC.setToolTipText("Save the .lrc file");
+        btnSaveLRC.setEnabled(false);
         btnSaveLRC.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSaveLRCActionPerformed(evt);
@@ -126,15 +144,15 @@ public class LRCEditor extends javax.swing.JFrame {
                         .addComponent(jLabel1)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(txtTimestamp, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtTimestamp, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtLyric, javax.swing.GroupLayout.DEFAULT_SIZE, 331, Short.MAX_VALUE)
+                        .addComponent(txtLyric, javax.swing.GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSave)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnDelete))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(btnSelect)
+                        .addComponent(btnOpenFile)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnSaveLRC)))
                 .addContainerGap())
@@ -148,10 +166,10 @@ public class LRCEditor extends javax.swing.JFrame {
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnSelect)
+                    .addComponent(btnOpenFile)
                     .addComponent(btnSaveLRC))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtTimestamp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -160,6 +178,74 @@ public class LRCEditor extends javax.swing.JFrame {
                     .addComponent(btnDelete))
                 .addContainerGap())
         );
+
+        menuFile.setText("File");
+
+        menuINewFile.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        menuINewFile.setText("New File");
+        menuINewFile.setToolTipText("Start over from a new file");
+        menuINewFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuINewFileActionPerformed(evt);
+            }
+        });
+        menuFile.add(menuINewFile);
+
+        menuIOpenFile.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        menuIOpenFile.setText("Open File...");
+        menuIOpenFile.setToolTipText("Open a pre-existing file to start editing");
+        menuIOpenFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuIOpenFileActionPerformed(evt);
+            }
+        });
+        menuFile.add(menuIOpenFile);
+        menuFile.add(jSeparator2);
+
+        menuISaveFile.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        menuISaveFile.setText("Save File");
+        menuISaveFile.setToolTipText("Save changes to .lrc file");
+        menuISaveFile.setEnabled(false);
+        menuISaveFile.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuISaveFileActionPerformed(evt);
+            }
+        });
+        menuFile.add(menuISaveFile);
+
+        menuISaveFileAs.setText("Save As...");
+        menuISaveFileAs.setToolTipText("Save as a new .lrc file");
+        menuISaveFileAs.setEnabled(false);
+        menuISaveFileAs.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuISaveFileAsActionPerformed(evt);
+            }
+        });
+        menuFile.add(menuISaveFileAs);
+
+        jMenuBar1.add(menuFile);
+
+        menuTools.setText("Tools");
+        menuTools.setToolTipText("");
+
+        menuIChangeTimestamps.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        menuIChangeTimestamps.setText("Change All Timestamps");
+        menuIChangeTimestamps.setToolTipText("Move all timestamps a specified amount of time (forward or backward)");
+        menuIChangeTimestamps.setEnabled(false);
+        menuIChangeTimestamps.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuIChangeTimestampsActionPerformed(evt);
+            }
+        });
+        menuTools.add(menuIChangeTimestamps);
+
+        jMenuBar1.add(menuTools);
+
+        menuPreferences.setText("Preferences");
+        menuPreferences.setEnabled(false);
+        jMenuBar1.add(menuPreferences);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -175,24 +261,10 @@ public class LRCEditor extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    // SELECT LRC FILE BUTTON
-    private void btnSelectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSelectActionPerformed
-        int returnVal = fileChooser.showOpenDialog(this);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File file = fileChooser.getSelectedFile();
-            try {
-                // Clear the list and read the file
-                this.listModel.clear();
-                this.songLength = "?";
-                this.filePath = file.getAbsolutePath();
-                readFile(this.filePath);
-            } catch (IOException ex) {
-                System.out.println("Problem accessing file: " + file.getAbsolutePath());
-            }
-        } else {
-            System.out.println("File access cancelled by user.");
-        }
-    }//GEN-LAST:event_btnSelectActionPerformed
+    // OPEN LRC FILE BUTTON
+    private void btnOpenFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpenFileActionPerformed
+        openFile();
+    }//GEN-LAST:event_btnOpenFileActionPerformed
 
     // CHANGE LYRIC SELECTION
     private void listLyricsValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listLyricsValueChanged
@@ -204,15 +276,11 @@ public class LRCEditor extends javax.swing.JFrame {
     // DELETE SELECTED LYRIC
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         try {
-            Lyric savedLyric = stringToLyric(String.format("%s %s", txtTimestamp.getText(), txtLyric.getText()));
-            for (int i = 0; i < listModel.size(); i++) {
-                Lyric lyric = listModel.getElementAt(i);
-                if (lyric.getTimestamp().compareTo(savedLyric.getTimestamp()) == 0) {
-                    listModel.removeElementAt(i);
-                    break;
-                }
-            }
+            // Remove selected lyric
+            listModel.removeElement(selectedLyric);
             this.listLyrics.clearSelection();
+            resetSaveButtons();
+
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Invalid timestamp. Try again. (" + e.getMessage() + ")");
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -220,29 +288,33 @@ public class LRCEditor extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
-    // ADD/UPDATE LYRIC
+    // SAVE LINE
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         try {
-            Lyric savedLyric = stringToLyric(String.format("%s %s", txtTimestamp.getText(), txtLyric.getText()));
-            boolean isNewLyric = true;
-            for (int i = 0; i < listModel.size(); i++) {
-                Lyric lyric = listModel.getElementAt(i);
-                if (lyric.getTimestamp().compareTo(savedLyric.getTimestamp()) == 0) {
-                    lyric.setLyric(savedLyric.getLyric());
-                    isNewLyric = false;
-                    break;
-                }
-            }
-            if (isNewLyric) {
+            Lyric savedLyric = new Lyric(stringToDuration(txtTimestamp.getText()), txtLyric.getText());
+            if (!listModel.isEmpty()) {
+                // Loop through listModel's lyrics
                 for (int i = 0; i < listModel.size(); i++) {
                     Lyric lyric = listModel.getElementAt(i);
+
+                    // If timestamp is the same, replace lyric
+                    if (lyric.getTimestamp().compareTo(savedLyric.getTimestamp()) == 0) {
+                        lyric.setLyric(savedLyric.getLyric());
+                        break;
+                    }
+
+                    // If inserted timestamp is smaller, add the lyric in that position
                     if (savedLyric.getTimestamp().compareTo(lyric.getTimestamp()) < 0) {
                         listModel.add(i, savedLyric);
                         break;
                     }
                 }
+                this.listLyrics.clearSelection();
+            } else {
+                listModel.addElement(savedLyric);
+                resetSaveButtons();
             }
-            this.listLyrics.clearSelection();
+
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Invalid timestamp. Try again. (" + e.getMessage() + ")");
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -250,10 +322,70 @@ public class LRCEditor extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnSaveActionPerformed
 
-    // SAVE LRC FILE
+    // SAVE LRC FILE (BUTTON)
     private void btnSaveLRCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveLRCActionPerformed
-        saveFile(this.filePath);
+        saveFile();
     }//GEN-LAST:event_btnSaveLRCActionPerformed
+
+    // OPEN "CHANGE TIMESTAMPS" POPUP MENU
+    private void menuIChangeTimestampsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuIChangeTimestampsActionPerformed
+        String value = JOptionPane.showInputDialog("Move all timestamps by an amount of time (+/-)");
+        try {
+            // Remove all brackets
+            value = trimBrackets(value);
+            // Get sign if provided
+            boolean addition = true;
+            char sign = value.charAt(0);
+            if (sign == '+' || sign == '-') {
+                // Remove sign from string
+                value = value.substring(1).strip();
+                addition = sign == '+';
+            }
+            Duration timestamp = stringToDuration(value);
+            // Check if any timestamp would be negative
+            if (!addition) {
+                for (int i = 0; i < listModel.size(); i++) {
+                    Lyric lyric = listModel.getElementAt(i);
+                    if (lyric.getTimestamp().compareTo(timestamp) < 0) {
+                        throw new NegativeTimestampException("Operation results in negative timestamp: "
+                                + Lyric.timestampToString(lyric.getTimestamp()) + " - "
+                                + Lyric.timestampToString(timestamp) + " = "
+                                + Lyric.timestampToString(lyric.getTimestamp().minus(timestamp)));
+                    }
+                }
+            }
+            // Perform addition/substraction
+            for (int i = 0; i < listModel.size(); i++) {
+                listModel.getElementAt(i).moveTimestamp(timestamp, addition);
+            }
+            this.listLyrics.updateUI();
+
+        } catch (NegativeTimestampException e) {
+            JOptionPane.showMessageDialog(null, "Invalid substraction, make sure there are no timestamps smaller than the inserted value.\n" + e.getMessage());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Inserted value is invalid. Make sure it's a valid timestamp operation, like: +00:00.000");
+        }
+    }//GEN-LAST:event_menuIChangeTimestampsActionPerformed
+
+    // SAVE LRC FILE (SHORTCUT)
+    private void menuISaveFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuISaveFileActionPerformed
+        saveFile();
+    }//GEN-LAST:event_menuISaveFileActionPerformed
+
+    // OPEN LRC FILE (SHORTCUT)
+    private void menuIOpenFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuIOpenFileActionPerformed
+        openFile();
+    }//GEN-LAST:event_menuIOpenFileActionPerformed
+
+    // NEW FILE
+    private void menuINewFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuINewFileActionPerformed
+        newFile();
+    }//GEN-LAST:event_menuINewFileActionPerformed
+
+    // SAVE FILE AS
+    private void menuISaveFileAsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuISaveFileAsActionPerformed
+        saveFileAs();
+    }//GEN-LAST:event_menuISaveFileAsActionPerformed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -285,60 +417,136 @@ public class LRCEditor extends javax.swing.JFrame {
         });
     }
 
+    // NEW FILE
+    private void newFile() {
+        this.filePath = null;
+        this.songLength = "?";
+        this.listModel.clear();
+        changeSelection(null);
+        resetSaveButtons();
+    }
+
+    // OPEN FILE
+    private void openFile() {
+        int returnVal = fileChooser.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            try {
+                // Clear the list and read the file
+                this.listModel.clear();
+                this.songLength = "?";
+                this.filePath = file.getAbsolutePath();
+                readFile(this.filePath);
+                resetSaveButtons();
+
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(null, "Problem accessing file: " + file.getAbsolutePath());
+            }
+        }
+    }
+
     // READ FILE AND CONVERT TO LYRICS
     private void readFile(String path) throws FileNotFoundException {
         File myObj = new File(path);
         try (Scanner myReader = new Scanner(myObj)) {
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine();
-                // Save song length if declared
-                if (data.contains("[length: ")) {
-                    this.songLength = data.split("length:")[1].split("\\]")[0].strip();
+                // Skip empty lines
+                if (data.trim().isEmpty()) {
+                    continue;
                 }
                 // Only add item to list if it's a timestamp
-                if (data.contains("[") && Character.isDigit(data.charAt(1))) {
+                if (Character.isDigit(data.charAt(1))) {
                     Lyric lyric = stringToLyric(data);
                     listModel.addElement(lyric);
+                    continue;
+                }
+                // Save song length if declared
+                if (data.startsWith("[length: ")) {
+                    this.songLength = data.split("\\[length:", 2)[1].split("\\]", 2)[0].strip();
                 }
             }
         }
     }
 
-    // SAVE TO FILE
-    private void saveFile(String path) {
+    // SAVE FILE - NOT FULLY IMPLEMENTED
+    private void saveFile() {
         try {
-            try (FileWriter myWriter = new FileWriter(path)) {
-                myWriter.write("[length: " + this.songLength + "]\n[tool: LeVel's LRC Editor]\n");
-                for (int i = 0; i < this.listModel.size(); i++) {
-                    myWriter.write(this.listModel.elementAt(i).toLyricString());
-                }
+            if (this.filePath == null) {
+                // Save as new file
+                saveFileAs();
+            } else {
+                // Overwrite file
+                saveToFile(this.filePath);
             }
-            JOptionPane.showMessageDialog(null, "Successfully wrote to the file.");
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "An error occurred: " + e.getMessage());
         }
     }
-    
+
+    // SAVE FILE AS
+    private void saveFileAs() {
+        JFileChooser saveFile = new JFileChooser();
+        int option = saveFile.showSaveDialog(null);
+        if (option == JFileChooser.APPROVE_OPTION) {
+            File file = saveFile.getSelectedFile();
+            this.filePath = file.getAbsolutePath();
+            JOptionPane.showMessageDialog(null, "File Saved as: " + file.getName());
+        }
+    }
+
+    // SAVE TO FILE
+    private void saveToFile(String path) throws IOException {
+        try (FileWriter myWriter = new FileWriter(path)) {
+            myWriter.write("[length: " + this.songLength + "]\n[tool: LeVel's LRC Editor]\n");
+            for (int i = 0; i < this.listModel.size(); i++) {
+                myWriter.write(this.listModel.elementAt(i).toLyricString());
+            }
+        }
+    }
+
     // CHANGE SELECTION
     private void changeSelection(Lyric lyric) {
         if (lyric == null) {
             lyric = new Lyric();
         }
         this.selectedLyric = lyric;
-        this.txtTimestamp.setText(this.selectedLyric.getTimestampString());
+        this.txtTimestamp.setText(Lyric.timestampToString(this.selectedLyric.getTimestamp()));
         this.txtLyric.setText(this.selectedLyric.getLyric());
         this.btnDelete.setEnabled(lyric.getTimestamp() != null);
     }
 
     // CONVERT STRING INTO LYRIC
     private Lyric stringToLyric(String fullLyric) throws NumberFormatException {
-        String[] fullTime = fullLyric.substring(1).split("\\]")[0].split("[:.]");
+        // Get timestamp without brackets
+        Duration timestamp = stringToDuration(fullLyric.split("\\]", 2)[0]);
+        // Get everything after first close bracket
+        String lyric = fullLyric.split("\\]", 2)[1].strip();
+        return new Lyric(timestamp, lyric);
+    }
+
+    // CONVERT STRING INTO DURATION
+    private Duration stringToDuration(String string) throws NumberFormatException {
+        String[] fullTime = trimBrackets(string).split("[:.]");
         Duration timestamp = Duration
                 .ofMinutes(Integer.parseInt(fullTime[0]))
                 .plusSeconds(Integer.parseInt(fullTime[1]))
                 .plusMillis(Integer.parseInt(fullTime[2]));
-        String lyric = fullLyric.split("\\]")[1].strip();
-        return new Lyric(timestamp, lyric);
+        return timestamp;
+    }
+
+    // ENABLE/DISABLE FILE/LYRICS OPERATIONS
+    private void resetSaveButtons() {
+        boolean enabled = !listModel.isEmpty();
+        this.btnSaveLRC.setEnabled(enabled);
+        this.menuISaveFile.setEnabled(enabled);
+        this.menuISaveFileAs.setEnabled(enabled);
+        this.menuIChangeTimestamps.setEnabled(enabled);
+    }
+
+    // TRIM BRACKETS
+    private String trimBrackets(String string) {
+        return string.replaceAll("[\\[\\]]", "");
     }
 
     // Default List Model
@@ -349,15 +557,25 @@ public class LRCEditor extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDelete;
+    private javax.swing.JButton btnOpenFile;
     private javax.swing.JButton btnSave;
     private javax.swing.JButton btnSaveLRC;
-    private javax.swing.JButton btnSelect;
     private javax.swing.JFileChooser fileChooser;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JList<Lyric> listLyrics;
+    private javax.swing.JMenu menuFile;
+    private javax.swing.JMenuItem menuIChangeTimestamps;
+    private javax.swing.JMenuItem menuINewFile;
+    private javax.swing.JMenuItem menuIOpenFile;
+    private javax.swing.JMenuItem menuISaveFile;
+    private javax.swing.JMenuItem menuISaveFileAs;
+    private javax.swing.JMenu menuPreferences;
+    private javax.swing.JMenu menuTools;
     private javax.swing.JTextField txtLyric;
     private javax.swing.JTextField txtTimestamp;
     // End of variables declaration//GEN-END:variables

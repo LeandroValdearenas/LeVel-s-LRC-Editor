@@ -35,21 +35,25 @@ public class Lyric {
         this.lyric = lyric;
     }
 
-    public String getTimestampString() {
-        if (this.timestamp == null) {
-            return "";
-        }
-        return String.format("[%02d:%02d.%03d]", this.timestamp.toMinutesPart(), this.timestamp.toSecondsPart(), this.timestamp.toMillisPart());
+    @Override
+    public String toString() {
+        // Two spaces for better visibility
+        return timestampToString(this.timestamp) + "  " + lyric;
     }
     
     public String toLyricString() {
         // Only one space, line breaks
-        return '\n' + getTimestampString() + ' ' + lyric;
+        return '\n' + timestampToString(this.timestamp) + ' ' + lyric;
     }
 
-    @Override
-    public String toString() {
-        // Two spaces for better visibility
-        return getTimestampString() + "  " + lyric;
+    public void moveTimestamp(Duration offset, boolean addition) {
+        this.timestamp = addition ? timestamp.plus(offset) : timestamp.minus(offset);
+    }
+
+    public static String timestampToString(Duration timestamp) {
+        if (timestamp == null) {
+            return "";
+        }
+        return String.format("[%02d:%02d.%03d]", timestamp.toMinutesPart(), timestamp.toSecondsPart(), timestamp.toMillisPart());
     }
 }
