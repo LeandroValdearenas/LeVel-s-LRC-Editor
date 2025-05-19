@@ -7,9 +7,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -35,41 +38,52 @@ public class LRCEditor extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        fileChooser = new javax.swing.JFileChooser();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jSeparator1 = new javax.swing.JSeparator();
+        fchOpen = new javax.swing.JFileChooser();
+        fchSave = new javax.swing.JFileChooser();
+        pnl1 = new javax.swing.JPanel();
+        lblTitle = new javax.swing.JLabel();
+        sprTitle = new javax.swing.JSeparator();
         btnOpenFile = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        listLyrics = new javax.swing.JList<>();
+        scrLyrics = new javax.swing.JScrollPane();
+        lstLyrics = new javax.swing.JList<>();
         txtTimestamp = new javax.swing.JTextField();
         txtLyric = new javax.swing.JTextField();
         btnSave = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         btnSaveLRC = new javax.swing.JButton();
-        jMenuBar1 = new javax.swing.JMenuBar();
-        menuFile = new javax.swing.JMenu();
-        menuINewFile = new javax.swing.JMenuItem();
-        menuIOpenFile = new javax.swing.JMenuItem();
-        jSeparator2 = new javax.swing.JPopupMenu.Separator();
-        menuISaveFile = new javax.swing.JMenuItem();
-        menuISaveFileAs = new javax.swing.JMenuItem();
-        menuTools = new javax.swing.JMenu();
-        menuIChangeTimestamps = new javax.swing.JMenuItem();
-        menuPreferences = new javax.swing.JMenu();
+        mnuBar = new javax.swing.JMenuBar();
+        mnuFile = new javax.swing.JMenu();
+        mniNew = new javax.swing.JMenuItem();
+        mniOpen = new javax.swing.JMenuItem();
+        sprMnuFile = new javax.swing.JPopupMenu.Separator();
+        mniSave = new javax.swing.JMenuItem();
+        mniSaveAs = new javax.swing.JMenuItem();
+        mnuTools = new javax.swing.JMenu();
+        mniTimestamps = new javax.swing.JMenuItem();
+        mnuPreferences = new javax.swing.JMenu();
 
-        fileChooser.setDialogTitle("Select your LRC file");
+        fchOpen.setBackground(pnl1.getBackground());
+        fchOpen.setCurrentDirectory(new File(defaultPath));
+        fchOpen.setDialogTitle("Select your LRC file");
+        fchOpen.setFileFilter(new FileNameExtensionFilter("Lyric File (.lrc)","lrc"));
+
+        fchSave.setDialogType(javax.swing.JFileChooser.SAVE_DIALOG);
+        fchSave.setBackground(pnl1.getBackground());
+        fchSave.setCurrentDirectory(new File(defaultPath));
+        fchSave.setDialogTitle("Save your LRC file as");
+        fchSave.setFileFilter(fchOpen.getFileFilter());
+        fchSave.setSelectedFile(new File(".lrc"));
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jPanel1.setBackground(new java.awt.Color(133, 192, 255));
-        jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        pnl1.setBackground(new java.awt.Color(133, 192, 255));
+        pnl1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        jLabel1.setFont(new java.awt.Font("Berlin Sans FB", 0, 36)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(0, 49, 100));
-        jLabel1.setText("LeVel's LRC Editor");
+        lblTitle.setFont(new java.awt.Font("Berlin Sans FB", 0, 36)); // NOI18N
+        lblTitle.setForeground(new java.awt.Color(0, 49, 100));
+        lblTitle.setText("LeVel's LRC Editor");
 
-        jSeparator1.setForeground(new java.awt.Color(22, 106, 255));
+        sprTitle.setForeground(new java.awt.Color(22, 106, 255));
 
         btnOpenFile.setBackground(new java.awt.Color(147, 228, 255));
         btnOpenFile.setForeground(new java.awt.Color(0, 107, 149));
@@ -81,20 +95,20 @@ public class LRCEditor extends javax.swing.JFrame {
             }
         });
 
-        jScrollPane1.setBackground(new java.awt.Color(12, 86, 124));
-        jScrollPane1.setForeground(new java.awt.Color(93, 124, 225));
+        scrLyrics.setBackground(new java.awt.Color(12, 86, 124));
+        scrLyrics.setForeground(new java.awt.Color(93, 124, 225));
 
-        listLyrics.setBackground(new java.awt.Color(11, 116, 185));
-        listLyrics.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        listLyrics.setForeground(new java.awt.Color(255, 217, 243));
-        listLyrics.setModel(listModel);
-        listLyrics.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        listLyrics.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+        lstLyrics.setBackground(new java.awt.Color(11, 116, 185));
+        lstLyrics.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        lstLyrics.setForeground(new java.awt.Color(255, 217, 243));
+        lstLyrics.setModel(listModel);
+        lstLyrics.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        lstLyrics.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                listLyricsValueChanged(evt);
+                lstLyricsValueChanged(evt);
             }
         });
-        jScrollPane1.setViewportView(listLyrics);
+        scrLyrics.setViewportView(lstLyrics);
 
         txtTimestamp.setToolTipText("Current line's timestamp, formatted: [00:00.000]");
 
@@ -131,47 +145,47 @@ public class LRCEditor extends javax.swing.JFrame {
             }
         });
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout pnl1Layout = new javax.swing.GroupLayout(pnl1);
+        pnl1.setLayout(pnl1Layout);
+        pnl1Layout.setHorizontalGroup(
+            pnl1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnl1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
+                .addGroup(pnl1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(scrLyrics, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(sprTitle, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(pnl1Layout.createSequentialGroup()
+                        .addComponent(lblTitle)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGroup(pnl1Layout.createSequentialGroup()
                         .addComponent(txtTimestamp, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtLyric, javax.swing.GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE)
+                        .addComponent(txtLyric, javax.swing.GroupLayout.DEFAULT_SIZE, 325, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSave)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnDelete))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGroup(pnl1Layout.createSequentialGroup()
                         .addComponent(btnOpenFile)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnSaveLRC)))
                 .addContainerGap())
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        pnl1Layout.setVerticalGroup(
+            pnl1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnl1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
+                .addComponent(lblTitle)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(sprTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(pnl1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnOpenFile)
                     .addComponent(btnSaveLRC))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
+                .addComponent(scrLyrics, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(pnl1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtTimestamp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtLyric, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnSave)
@@ -179,83 +193,83 @@ public class LRCEditor extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        menuFile.setText("File");
+        mnuFile.setText("File");
 
-        menuINewFile.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        menuINewFile.setText("New File");
-        menuINewFile.setToolTipText("Start over from a new file");
-        menuINewFile.addActionListener(new java.awt.event.ActionListener() {
+        mniNew.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        mniNew.setText("New File");
+        mniNew.setToolTipText("Start over from a new file");
+        mniNew.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuINewFileActionPerformed(evt);
+                mniNewActionPerformed(evt);
             }
         });
-        menuFile.add(menuINewFile);
+        mnuFile.add(mniNew);
 
-        menuIOpenFile.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        menuIOpenFile.setText("Open File...");
-        menuIOpenFile.setToolTipText("Open a pre-existing file to start editing");
-        menuIOpenFile.addActionListener(new java.awt.event.ActionListener() {
+        mniOpen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        mniOpen.setText("Open File...");
+        mniOpen.setToolTipText("Open a pre-existing file to start editing");
+        mniOpen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuIOpenFileActionPerformed(evt);
+                mniOpenActionPerformed(evt);
             }
         });
-        menuFile.add(menuIOpenFile);
-        menuFile.add(jSeparator2);
+        mnuFile.add(mniOpen);
+        mnuFile.add(sprMnuFile);
 
-        menuISaveFile.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        menuISaveFile.setText("Save File");
-        menuISaveFile.setToolTipText("Save changes to .lrc file");
-        menuISaveFile.setEnabled(false);
-        menuISaveFile.addActionListener(new java.awt.event.ActionListener() {
+        mniSave.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        mniSave.setText("Save File");
+        mniSave.setToolTipText("Save changes to .lrc file");
+        mniSave.setEnabled(false);
+        mniSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuISaveFileActionPerformed(evt);
+                mniSaveActionPerformed(evt);
             }
         });
-        menuFile.add(menuISaveFile);
+        mnuFile.add(mniSave);
 
-        menuISaveFileAs.setText("Save As...");
-        menuISaveFileAs.setToolTipText("Save as a new .lrc file");
-        menuISaveFileAs.setEnabled(false);
-        menuISaveFileAs.addActionListener(new java.awt.event.ActionListener() {
+        mniSaveAs.setText("Save As...");
+        mniSaveAs.setToolTipText("Save as a new .lrc file");
+        mniSaveAs.setEnabled(false);
+        mniSaveAs.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuISaveFileAsActionPerformed(evt);
+                mniSaveAsActionPerformed(evt);
             }
         });
-        menuFile.add(menuISaveFileAs);
+        mnuFile.add(mniSaveAs);
 
-        jMenuBar1.add(menuFile);
+        mnuBar.add(mnuFile);
 
-        menuTools.setText("Tools");
-        menuTools.setToolTipText("");
+        mnuTools.setText("Tools");
+        mnuTools.setToolTipText("");
 
-        menuIChangeTimestamps.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        menuIChangeTimestamps.setText("Change All Timestamps");
-        menuIChangeTimestamps.setToolTipText("Move all timestamps a specified amount of time (forward or backward)");
-        menuIChangeTimestamps.setEnabled(false);
-        menuIChangeTimestamps.addActionListener(new java.awt.event.ActionListener() {
+        mniTimestamps.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        mniTimestamps.setText("Change All Timestamps");
+        mniTimestamps.setToolTipText("Move all timestamps a specified amount of time (forward or backward)");
+        mniTimestamps.setEnabled(false);
+        mniTimestamps.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuIChangeTimestampsActionPerformed(evt);
+                mniTimestampsActionPerformed(evt);
             }
         });
-        menuTools.add(menuIChangeTimestamps);
+        mnuTools.add(mniTimestamps);
 
-        jMenuBar1.add(menuTools);
+        mnuBar.add(mnuTools);
 
-        menuPreferences.setText("Preferences");
-        menuPreferences.setEnabled(false);
-        jMenuBar1.add(menuPreferences);
+        mnuPreferences.setText("Preferences");
+        mnuPreferences.setEnabled(false);
+        mnuBar.add(mnuPreferences);
 
-        setJMenuBar(jMenuBar1);
+        setJMenuBar(mnuBar);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(pnl1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(pnl1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -267,18 +281,18 @@ public class LRCEditor extends javax.swing.JFrame {
     }//GEN-LAST:event_btnOpenFileActionPerformed
 
     // CHANGE LYRIC SELECTION
-    private void listLyricsValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_listLyricsValueChanged
+    private void lstLyricsValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lstLyricsValueChanged
         if (!evt.getValueIsAdjusting()) {
-            changeSelection(this.listLyrics.getSelectedValue());
+            changeSelection(this.lstLyrics.getSelectedValue());
         }
-    }//GEN-LAST:event_listLyricsValueChanged
+    }//GEN-LAST:event_lstLyricsValueChanged
 
     // DELETE SELECTED LYRIC
     private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         try {
             // Remove selected lyric
             listModel.removeElement(selectedLyric);
-            this.listLyrics.clearSelection();
+            this.lstLyrics.clearSelection();
             resetSaveButtons();
 
         } catch (NumberFormatException e) {
@@ -309,7 +323,7 @@ public class LRCEditor extends javax.swing.JFrame {
                         break;
                     }
                 }
-                this.listLyrics.clearSelection();
+                this.lstLyrics.clearSelection();
             } else {
                 listModel.addElement(savedLyric);
                 resetSaveButtons();
@@ -328,7 +342,7 @@ public class LRCEditor extends javax.swing.JFrame {
     }//GEN-LAST:event_btnSaveLRCActionPerformed
 
     // OPEN "CHANGE TIMESTAMPS" POPUP MENU
-    private void menuIChangeTimestampsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuIChangeTimestampsActionPerformed
+    private void mniTimestampsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniTimestampsActionPerformed
         String value = JOptionPane.showInputDialog("Move all timestamps by an amount of time (+/-)");
         try {
             // Remove all brackets
@@ -358,34 +372,38 @@ public class LRCEditor extends javax.swing.JFrame {
             for (int i = 0; i < listModel.size(); i++) {
                 listModel.getElementAt(i).moveTimestamp(timestamp, addition);
             }
-            this.listLyrics.updateUI();
+            this.lstLyrics.updateUI();
 
         } catch (NegativeTimestampException e) {
             JOptionPane.showMessageDialog(null, "Invalid substraction, make sure there are no timestamps smaller than the inserted value.\n" + e.getMessage());
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Inserted value is invalid. Make sure it's a valid timestamp operation, like: +00:00.000");
         }
-    }//GEN-LAST:event_menuIChangeTimestampsActionPerformed
+    }//GEN-LAST:event_mniTimestampsActionPerformed
 
     // SAVE LRC FILE (SHORTCUT)
-    private void menuISaveFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuISaveFileActionPerformed
+    private void mniSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniSaveActionPerformed
         saveFile();
-    }//GEN-LAST:event_menuISaveFileActionPerformed
+    }//GEN-LAST:event_mniSaveActionPerformed
 
     // OPEN LRC FILE (SHORTCUT)
-    private void menuIOpenFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuIOpenFileActionPerformed
+    private void mniOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniOpenActionPerformed
         openFile();
-    }//GEN-LAST:event_menuIOpenFileActionPerformed
+    }//GEN-LAST:event_mniOpenActionPerformed
 
     // NEW FILE
-    private void menuINewFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuINewFileActionPerformed
+    private void mniNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniNewActionPerformed
         newFile();
-    }//GEN-LAST:event_menuINewFileActionPerformed
+    }//GEN-LAST:event_mniNewActionPerformed
 
     // SAVE FILE AS
-    private void menuISaveFileAsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuISaveFileAsActionPerformed
-        saveFileAs();
-    }//GEN-LAST:event_menuISaveFileAsActionPerformed
+    private void mniSaveAsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniSaveAsActionPerformed
+        try {
+            saveFileAs();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "An error occurred while saving file: " + e.getMessage());
+        }
+    }//GEN-LAST:event_mniSaveAsActionPerformed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -428,9 +446,9 @@ public class LRCEditor extends javax.swing.JFrame {
 
     // OPEN FILE
     private void openFile() {
-        int returnVal = fileChooser.showOpenDialog(this);
+        int returnVal = fchOpen.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File file = fileChooser.getSelectedFile();
+            File file = fchOpen.getSelectedFile();
             try {
                 // Clear the list and read the file
                 this.listModel.clear();
@@ -469,7 +487,7 @@ public class LRCEditor extends javax.swing.JFrame {
         }
     }
 
-    // SAVE FILE - NOT FULLY IMPLEMENTED
+    // SAVE FILE
     private void saveFile() {
         try {
             if (this.filePath == null) {
@@ -480,17 +498,17 @@ public class LRCEditor extends javax.swing.JFrame {
                 saveToFile(this.filePath);
             }
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "An error occurred: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "An error occurred while saving file: " + e.getMessage());
         }
     }
 
     // SAVE FILE AS
-    private void saveFileAs() {
-        JFileChooser saveFile = new JFileChooser();
-        int option = saveFile.showSaveDialog(null);
+    private void saveFileAs() throws IOException {
+        int option = fchSave.showSaveDialog(null);
         if (option == JFileChooser.APPROVE_OPTION) {
-            File file = saveFile.getSelectedFile();
+            File file = fchSave.getSelectedFile();
             this.filePath = file.getAbsolutePath();
+            saveToFile(this.filePath);
             JOptionPane.showMessageDialog(null, "File Saved as: " + file.getName());
         }
     }
@@ -539,9 +557,9 @@ public class LRCEditor extends javax.swing.JFrame {
     private void resetSaveButtons() {
         boolean enabled = !listModel.isEmpty();
         this.btnSaveLRC.setEnabled(enabled);
-        this.menuISaveFile.setEnabled(enabled);
-        this.menuISaveFileAs.setEnabled(enabled);
-        this.menuIChangeTimestamps.setEnabled(enabled);
+        this.mniSave.setEnabled(enabled);
+        this.mniSaveAs.setEnabled(enabled);
+        this.mniTimestamps.setEnabled(enabled);
     }
 
     // TRIM BRACKETS
@@ -554,28 +572,30 @@ public class LRCEditor extends javax.swing.JFrame {
     private Lyric selectedLyric;
     private String filePath;
     private String songLength;
+    private String defaultPath = ""; // Placeholder
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnOpenFile;
     private javax.swing.JButton btnSave;
     private javax.swing.JButton btnSaveLRC;
-    private javax.swing.JFileChooser fileChooser;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JPopupMenu.Separator jSeparator2;
-    private javax.swing.JList<Lyric> listLyrics;
-    private javax.swing.JMenu menuFile;
-    private javax.swing.JMenuItem menuIChangeTimestamps;
-    private javax.swing.JMenuItem menuINewFile;
-    private javax.swing.JMenuItem menuIOpenFile;
-    private javax.swing.JMenuItem menuISaveFile;
-    private javax.swing.JMenuItem menuISaveFileAs;
-    private javax.swing.JMenu menuPreferences;
-    private javax.swing.JMenu menuTools;
+    private javax.swing.JFileChooser fchOpen;
+    private javax.swing.JFileChooser fchSave;
+    private javax.swing.JLabel lblTitle;
+    private javax.swing.JList<Lyric> lstLyrics;
+    private javax.swing.JMenuItem mniNew;
+    private javax.swing.JMenuItem mniOpen;
+    private javax.swing.JMenuItem mniSave;
+    private javax.swing.JMenuItem mniSaveAs;
+    private javax.swing.JMenuItem mniTimestamps;
+    private javax.swing.JMenuBar mnuBar;
+    private javax.swing.JMenu mnuFile;
+    private javax.swing.JMenu mnuPreferences;
+    private javax.swing.JMenu mnuTools;
+    private javax.swing.JPanel pnl1;
+    private javax.swing.JScrollPane scrLyrics;
+    private javax.swing.JPopupMenu.Separator sprMnuFile;
+    private javax.swing.JSeparator sprTitle;
     private javax.swing.JTextField txtLyric;
     private javax.swing.JTextField txtTimestamp;
     // End of variables declaration//GEN-END:variables
