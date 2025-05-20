@@ -7,12 +7,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  *
@@ -42,15 +41,20 @@ public class LRCEditor extends javax.swing.JFrame {
         fchSave = new javax.swing.JFileChooser();
         pnl1 = new javax.swing.JPanel();
         lblTitle = new javax.swing.JLabel();
-        sprTitle = new javax.swing.JSeparator();
         btnOpenFile = new javax.swing.JButton();
+        btnSaveLRC = new javax.swing.JButton();
+        tab1 = new javax.swing.JTabbedPane();
+        pnlSetLyrics = new javax.swing.JPanel();
+        lblSetLyrics = new javax.swing.JLabel();
+        scrTxaLyrics = new javax.swing.JScrollPane();
+        txaLyrics = new javax.swing.JTextArea();
+        pnlEditLyrics = new javax.swing.JPanel();
         scrLyrics = new javax.swing.JScrollPane();
         lstLyrics = new javax.swing.JList<>();
         txtTimestamp = new javax.swing.JTextField();
         txtLyric = new javax.swing.JTextField();
         btnSave = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
-        btnSaveLRC = new javax.swing.JButton();
         mnuBar = new javax.swing.JMenuBar();
         mnuFile = new javax.swing.JMenu();
         mniNew = new javax.swing.JMenuItem();
@@ -83,8 +87,6 @@ public class LRCEditor extends javax.swing.JFrame {
         lblTitle.setForeground(new java.awt.Color(0, 49, 100));
         lblTitle.setText("LeVel's LRC Editor");
 
-        sprTitle.setForeground(new java.awt.Color(22, 106, 255));
-
         btnOpenFile.setBackground(new java.awt.Color(147, 228, 255));
         btnOpenFile.setForeground(new java.awt.Color(0, 107, 149));
         btnOpenFile.setText("Open LRC file");
@@ -94,6 +96,66 @@ public class LRCEditor extends javax.swing.JFrame {
                 btnOpenFileActionPerformed(evt);
             }
         });
+
+        btnSaveLRC.setBackground(new java.awt.Color(248, 255, 130));
+        btnSaveLRC.setText("Save LRC file");
+        btnSaveLRC.setToolTipText("Save the .lrc file");
+        btnSaveLRC.setEnabled(false);
+        btnSaveLRC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveLRCActionPerformed(evt);
+            }
+        });
+
+        tab1.setBackground(pnl1.getBackground());
+        tab1.setForeground(lblTitle.getForeground());
+        tab1.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                tab1StateChanged(evt);
+            }
+        });
+
+        pnlSetLyrics.setBackground(new java.awt.Color(246, 86, 181));
+
+        lblSetLyrics.setForeground(new java.awt.Color(243, 243, 243));
+        lblSetLyrics.setText("Insert your lyrics below, without timestamp.");
+
+        scrTxaLyrics.setBackground(txaLyrics.getForeground());
+        scrTxaLyrics.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        scrTxaLyrics.setForeground(pnlSetLyrics.getBackground());
+
+        txaLyrics.setBackground(new java.awt.Color(101, 0, 82));
+        txaLyrics.setColumns(20);
+        txaLyrics.setForeground(new java.awt.Color(255, 192, 208));
+        txaLyrics.setRows(5);
+        scrTxaLyrics.setViewportView(txaLyrics);
+
+        javax.swing.GroupLayout pnlSetLyricsLayout = new javax.swing.GroupLayout(pnlSetLyrics);
+        pnlSetLyrics.setLayout(pnlSetLyricsLayout);
+        pnlSetLyricsLayout.setHorizontalGroup(
+            pnlSetLyricsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlSetLyricsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnlSetLyricsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(scrTxaLyrics, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 581, Short.MAX_VALUE)
+                    .addGroup(pnlSetLyricsLayout.createSequentialGroup()
+                        .addComponent(lblSetLyrics)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        pnlSetLyricsLayout.setVerticalGroup(
+            pnlSetLyricsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlSetLyricsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblSetLyrics)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(scrTxaLyrics, javax.swing.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        tab1.addTab("Set lyrics", pnlSetLyrics);
+
+        pnlEditLyrics.setBackground(new java.awt.Color(89, 148, 255));
 
         scrLyrics.setBackground(new java.awt.Color(12, 86, 124));
         scrLyrics.setForeground(new java.awt.Color(93, 124, 225));
@@ -135,15 +197,44 @@ public class LRCEditor extends javax.swing.JFrame {
             }
         });
 
-        btnSaveLRC.setBackground(new java.awt.Color(248, 255, 130));
-        btnSaveLRC.setText("Save LRC file");
-        btnSaveLRC.setToolTipText("Save the .lrc file");
-        btnSaveLRC.setEnabled(false);
-        btnSaveLRC.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSaveLRCActionPerformed(evt);
-            }
-        });
+        javax.swing.GroupLayout pnlEditLyricsLayout = new javax.swing.GroupLayout(pnlEditLyrics);
+        pnlEditLyrics.setLayout(pnlEditLyricsLayout);
+        pnlEditLyricsLayout.setHorizontalGroup(
+            pnlEditLyricsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlEditLyricsLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(txtTimestamp, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtLyric, javax.swing.GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnSave)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnDelete)
+                .addContainerGap())
+            .addGroup(pnlEditLyricsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(pnlEditLyricsLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(scrLyrics, javax.swing.GroupLayout.DEFAULT_SIZE, 581, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+        pnlEditLyricsLayout.setVerticalGroup(
+            pnlEditLyricsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlEditLyricsLayout.createSequentialGroup()
+                .addContainerGap(291, Short.MAX_VALUE)
+                .addGroup(pnlEditLyricsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtLyric, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtTimestamp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnDelete)
+                    .addComponent(btnSave))
+                .addContainerGap())
+            .addGroup(pnlEditLyricsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(pnlEditLyricsLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(scrLyrics, javax.swing.GroupLayout.DEFAULT_SIZE, 276, Short.MAX_VALUE)
+                    .addGap(38, 38, 38)))
+        );
+
+        tab1.addTab("Edit lyrics", pnlEditLyrics);
 
         javax.swing.GroupLayout pnl1Layout = new javax.swing.GroupLayout(pnl1);
         pnl1.setLayout(pnl1Layout);
@@ -151,47 +242,31 @@ public class LRCEditor extends javax.swing.JFrame {
             pnl1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnl1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(pnl1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(scrLyrics, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(sprTitle, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(pnl1Layout.createSequentialGroup()
-                        .addComponent(lblTitle)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(pnl1Layout.createSequentialGroup()
-                        .addComponent(txtTimestamp, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtLyric, javax.swing.GroupLayout.DEFAULT_SIZE, 325, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnSave)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnDelete))
-                    .addGroup(pnl1Layout.createSequentialGroup()
-                        .addComponent(btnOpenFile)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnSaveLRC)))
+                .addComponent(lblTitle)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 96, Short.MAX_VALUE)
+                .addComponent(btnOpenFile)
+                .addGap(18, 18, 18)
+                .addComponent(btnSaveLRC)
                 .addContainerGap())
+            .addGroup(pnl1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(tab1, javax.swing.GroupLayout.DEFAULT_SIZE, 593, Short.MAX_VALUE))
         );
         pnl1Layout.setVerticalGroup(
             pnl1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnl1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblTitle)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(sprTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pnl1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnOpenFile)
-                    .addComponent(btnSaveLRC))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(scrLyrics, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(pnl1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtTimestamp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtLyric, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnSave)
-                    .addComponent(btnDelete))
-                .addContainerGap())
+                    .addComponent(lblTitle)
+                    .addComponent(btnSaveLRC)
+                    .addComponent(btnOpenFile))
+                .addContainerGap(355, Short.MAX_VALUE))
+            .addGroup(pnl1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl1Layout.createSequentialGroup()
+                    .addGap(47, 47, 47)
+                    .addComponent(tab1, javax.swing.GroupLayout.DEFAULT_SIZE, 347, Short.MAX_VALUE)))
         );
+
+        tab1.getAccessibleContext().setAccessibleName("tab1");
 
         mnuFile.setText("File");
 
@@ -311,16 +386,29 @@ public class LRCEditor extends javax.swing.JFrame {
                 for (int i = 0; i < listModel.size(); i++) {
                     Lyric lyric = listModel.getElementAt(i);
 
-                    // If timestamp is the same, replace lyric
-                    if (lyric.getTimestamp().compareTo(savedLyric.getTimestamp()) == 0) {
-                        lyric.setLyric(savedLyric.getLyric());
-                        break;
+                    // If timestamp is null
+                    if (lyric.getTimestamp() == null) {
+                        if (lyric.getLyric().equals(savedLyric.getLyric())) {
+                            // If lyric is the same, replace timestamp
+                            lyric.setTimestamp(savedLyric.getTimestamp());
+                            break;
+                        }
+                    } else {
+                        int difference = lyric.getTimestamp().compareTo(savedLyric.getTimestamp());
+                        // If timestamp is the same, replace lyric
+                        if (difference == 0) {
+                            lyric.setLyric(savedLyric.getLyric());
+                            break;
+                        }
+                        // If inserted timestamp is smaller, add the lyric in that position
+                        if (difference > 0) {
+                            listModel.add(i, savedLyric);
+                            break;
+                        }
                     }
-
-                    // If inserted timestamp is smaller, add the lyric in that position
-                    if (savedLyric.getTimestamp().compareTo(lyric.getTimestamp()) < 0) {
-                        listModel.add(i, savedLyric);
-                        break;
+                    // If there is nothing after, add the lyric at the end
+                    if (i + 1 == listModel.size()) {
+                        listModel.addElement(savedLyric);
                     }
                 }
                 this.lstLyrics.clearSelection();
@@ -405,6 +493,18 @@ public class LRCEditor extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_mniSaveAsActionPerformed
 
+    // CHANGE TABS
+    private void tab1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tab1StateChanged
+        switch (tab1.getSelectedIndex()) {
+            // Change to first tab
+            case 0 ->
+                setTxaTextFromList();
+            // Change to second tab
+            case 1 ->
+                setListLyricsFromTxa();
+        }
+    }//GEN-LAST:event_tab1StateChanged
+
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -440,6 +540,8 @@ public class LRCEditor extends javax.swing.JFrame {
         this.filePath = null;
         this.songLength = "?";
         this.listModel.clear();
+        this.tab1.setSelectedIndex(0);
+        this.txaLyrics.setText("");
         changeSelection(null);
         resetSaveButtons();
     }
@@ -450,6 +552,8 @@ public class LRCEditor extends javax.swing.JFrame {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fchOpen.getSelectedFile();
             try {
+                // Open edit tab
+                tab1.setSelectedIndex(1);
                 // Clear the list and read the file
                 this.listModel.clear();
                 this.songLength = "?";
@@ -534,6 +638,42 @@ public class LRCEditor extends javax.swing.JFrame {
         this.btnDelete.setEnabled(lyric.getTimestamp() != null);
     }
 
+    // SET TEXT AREA WITH LIST MODEL LYRICS
+    private void setTxaTextFromList() {
+        txaLyrics.setText("");
+        for (int i = 0; i < this.listModel.size(); i++) {
+            var line = this.listModel.elementAt(i).getLyric() + (i + 1 < this.listModel.size() ? "\n" : "");
+            txaLyrics.setText(txaLyrics.getText().concat(line));
+        }
+    }
+
+    // SET LIST MODEL LYRICS WITH TEXT AREA
+    private void setListLyricsFromTxa() {
+        String text = txaLyrics.getText();
+        // In case final line is empty
+        if (text.endsWith("")) {
+            text += "\n";
+        }
+        var lines = text.lines().toList();
+        var savedLyrics = listModel.toArray();
+        // Clear List Model
+        listModel.clear();
+        // Loop through text area's lines
+        for (var line : lines) {
+            var lyric = new Lyric(null, line);
+            for (int i = 0; i < savedLyrics.length; i++) {
+                if (((Lyric) savedLyrics[i]).getLyric().equals(line)) {
+                    lyric.setTimestamp(((Lyric) savedLyrics[i]).getTimestamp());
+                    savedLyrics = ArrayUtils.remove(savedLyrics, i);
+                    break;
+                }
+            }
+            listModel.addElement(lyric);
+        }
+        resetSaveButtons();
+        changeSelection(null);
+    }
+
     // CONVERT STRING INTO LYRIC
     private Lyric stringToLyric(String fullLyric) throws NumberFormatException {
         // Get timestamp without brackets
@@ -555,7 +695,17 @@ public class LRCEditor extends javax.swing.JFrame {
 
     // ENABLE/DISABLE FILE/LYRICS OPERATIONS
     private void resetSaveButtons() {
+        // Enable if list has items, otherwise disable
         boolean enabled = !listModel.isEmpty();
+        // Disable if any timestamp is null
+        if (enabled) {
+            for (var l : listModel.toArray()) {
+                if (((Lyric) l).getTimestamp() == null) {
+                    enabled = false;
+                    break;
+                }
+            }
+        }
         this.btnSaveLRC.setEnabled(enabled);
         this.mniSave.setEnabled(enabled);
         this.mniSaveAs.setEnabled(enabled);
@@ -581,6 +731,7 @@ public class LRCEditor extends javax.swing.JFrame {
     private javax.swing.JButton btnSaveLRC;
     private javax.swing.JFileChooser fchOpen;
     private javax.swing.JFileChooser fchSave;
+    private javax.swing.JLabel lblSetLyrics;
     private javax.swing.JLabel lblTitle;
     private javax.swing.JList<Lyric> lstLyrics;
     private javax.swing.JMenuItem mniNew;
@@ -593,9 +744,13 @@ public class LRCEditor extends javax.swing.JFrame {
     private javax.swing.JMenu mnuPreferences;
     private javax.swing.JMenu mnuTools;
     private javax.swing.JPanel pnl1;
+    private javax.swing.JPanel pnlEditLyrics;
+    private javax.swing.JPanel pnlSetLyrics;
     private javax.swing.JScrollPane scrLyrics;
+    private javax.swing.JScrollPane scrTxaLyrics;
     private javax.swing.JPopupMenu.Separator sprMnuFile;
-    private javax.swing.JSeparator sprTitle;
+    private javax.swing.JTabbedPane tab1;
+    private javax.swing.JTextArea txaLyrics;
     private javax.swing.JTextField txtLyric;
     private javax.swing.JTextField txtTimestamp;
     // End of variables declaration//GEN-END:variables
