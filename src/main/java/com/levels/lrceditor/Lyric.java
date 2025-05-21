@@ -1,4 +1,4 @@
-package com.levels.lrceditor.model;
+package com.levels.lrceditor;
 
 import java.time.Duration;
 
@@ -41,7 +41,7 @@ public class Lyric {
         return timestampToString(this.timestamp) + "  " + lyric;
     }
     
-    public String toLyricString() {
+    public String toLrcString() {
         // Only one space, line breaks
         return '\n' + timestampToString(this.timestamp) + ' ' + lyric;
     }

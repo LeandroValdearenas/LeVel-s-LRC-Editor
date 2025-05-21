@@ -1,6 +1,5 @@
 package com.levels.lrceditor;
 
-import com.levels.lrceditor.model.Lyric;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -10,6 +9,7 @@ import java.util.Scanner;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JSlider;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -19,12 +19,30 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 public class LRCEditor extends javax.swing.JFrame {
 
+    // Extensions
+    private final FileNameExtensionFilter LRC_EXTENSION = new FileNameExtensionFilter("Lyric File (.lrc)", "lrc");
+    private final FileNameExtensionFilter MP3_EXTENSION = new FileNameExtensionFilter("MP3 File (.mp3)", "mp3");
+
+    // Paths
+    private String lrcPath;
+    private String defaultPath;
+
+    // MP3 Player
+    private Mp3Player mp3Player;
+
+    // Selected Lyric (for editing)
+    private Lyric selectedLyric;
+
+    // Default List Model for the Lyrics
+    private DefaultListModel<Lyric> listModel;
+
     /**
      * Creates new form LRCEditor
      */
     public LRCEditor() {
+        this.defaultPath = ""; // <-- /!\ Placeholder
+        this.mp3Player = new Mp3Player(this);
         this.listModel = new DefaultListModel();
-        this.songLength = "?";
         initComponents();
     }
 
@@ -41,7 +59,7 @@ public class LRCEditor extends javax.swing.JFrame {
         fchSave = new javax.swing.JFileChooser();
         pnl1 = new javax.swing.JPanel();
         lblTitle = new javax.swing.JLabel();
-        btnOpenFile = new javax.swing.JButton();
+        btnOpenLrcFile = new javax.swing.JButton();
         btnSaveLRC = new javax.swing.JButton();
         tab1 = new javax.swing.JTabbedPane();
         pnlSetLyrics = new javax.swing.JPanel();
@@ -55,6 +73,12 @@ public class LRCEditor extends javax.swing.JFrame {
         txtLyric = new javax.swing.JTextField();
         btnSave = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
+        pnlSong = new javax.swing.JPanel();
+        sldSong = new javax.swing.JSlider();
+        lblSongLength = new javax.swing.JLabel();
+        btnOpenMp3File = new javax.swing.JButton();
+        btnPlaySong = new javax.swing.JButton();
+        btnPauseSong = new javax.swing.JButton();
         mnuBar = new javax.swing.JMenuBar();
         mnuFile = new javax.swing.JMenu();
         mniNew = new javax.swing.JMenuItem();
@@ -68,14 +92,12 @@ public class LRCEditor extends javax.swing.JFrame {
 
         fchOpen.setBackground(pnl1.getBackground());
         fchOpen.setCurrentDirectory(new File(defaultPath));
-        fchOpen.setDialogTitle("Select your LRC file");
-        fchOpen.setFileFilter(new FileNameExtensionFilter("Lyric File (.lrc)","lrc"));
 
         fchSave.setDialogType(javax.swing.JFileChooser.SAVE_DIALOG);
         fchSave.setBackground(pnl1.getBackground());
         fchSave.setCurrentDirectory(new File(defaultPath));
         fchSave.setDialogTitle("Save your LRC file as");
-        fchSave.setFileFilter(fchOpen.getFileFilter());
+        fchSave.setFileFilter(LRC_EXTENSION);
         fchSave.setSelectedFile(new File(".lrc"));
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -87,20 +109,20 @@ public class LRCEditor extends javax.swing.JFrame {
         lblTitle.setForeground(new java.awt.Color(0, 49, 100));
         lblTitle.setText("LeVel's LRC Editor");
 
-        btnOpenFile.setBackground(new java.awt.Color(147, 228, 255));
-        btnOpenFile.setForeground(new java.awt.Color(0, 107, 149));
-        btnOpenFile.setText("Open LRC file");
-        btnOpenFile.setToolTipText("Open a pre-existing .lrc file to start editing");
-        btnOpenFile.addActionListener(new java.awt.event.ActionListener() {
+        btnOpenLrcFile.setBackground(new java.awt.Color(147, 228, 255));
+        btnOpenLrcFile.setForeground(new java.awt.Color(0, 107, 149));
+        btnOpenLrcFile.setText("Open LRC File");
+        btnOpenLrcFile.setToolTipText("Open a pre-existing .lrc file to start editing");
+        btnOpenLrcFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnOpenFileActionPerformed(evt);
+                btnOpenLrcFileActionPerformed(evt);
             }
         });
 
         btnSaveLRC.setBackground(new java.awt.Color(248, 255, 130));
-        btnSaveLRC.setText("Save LRC file");
         btnSaveLRC.setToolTipText("Save the .lrc file");
         btnSaveLRC.setEnabled(false);
+        btnSaveLRC.setLabel("Save LRC File");
         btnSaveLRC.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSaveLRCActionPerformed(evt);
@@ -137,7 +159,7 @@ public class LRCEditor extends javax.swing.JFrame {
             .addGroup(pnlSetLyricsLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pnlSetLyricsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(scrTxaLyrics, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 581, Short.MAX_VALUE)
+                    .addComponent(scrTxaLyrics, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 820, Short.MAX_VALUE)
                     .addGroup(pnlSetLyricsLayout.createSequentialGroup()
                         .addComponent(lblSetLyrics)
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -149,11 +171,11 @@ public class LRCEditor extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(lblSetLyrics)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(scrTxaLyrics, javax.swing.GroupLayout.DEFAULT_SIZE, 286, Short.MAX_VALUE)
+                .addComponent(scrTxaLyrics, javax.swing.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
-        tab1.addTab("Set lyrics", pnlSetLyrics);
+        tab1.addTab("Set Lyrics", pnlSetLyrics);
 
         pnlEditLyrics.setBackground(new java.awt.Color(89, 148, 255));
 
@@ -205,7 +227,7 @@ public class LRCEditor extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(txtTimestamp, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtLyric, javax.swing.GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE)
+                .addComponent(txtLyric, javax.swing.GroupLayout.DEFAULT_SIZE, 548, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnSave)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -214,13 +236,13 @@ public class LRCEditor extends javax.swing.JFrame {
             .addGroup(pnlEditLyricsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(pnlEditLyricsLayout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(scrLyrics, javax.swing.GroupLayout.DEFAULT_SIZE, 581, Short.MAX_VALUE)
+                    .addComponent(scrLyrics, javax.swing.GroupLayout.DEFAULT_SIZE, 820, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         pnlEditLyricsLayout.setVerticalGroup(
             pnlEditLyricsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlEditLyricsLayout.createSequentialGroup()
-                .addContainerGap(291, Short.MAX_VALUE)
+                .addContainerGap(272, Short.MAX_VALUE)
                 .addGroup(pnlEditLyricsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtLyric, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtTimestamp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -230,11 +252,91 @@ public class LRCEditor extends javax.swing.JFrame {
             .addGroup(pnlEditLyricsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(pnlEditLyricsLayout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(scrLyrics, javax.swing.GroupLayout.DEFAULT_SIZE, 276, Short.MAX_VALUE)
+                    .addComponent(scrLyrics, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
                     .addGap(38, 38, 38)))
         );
 
-        tab1.addTab("Edit lyrics", pnlEditLyrics);
+        tab1.addTab("Edit Lyrics", pnlEditLyrics);
+
+        pnlSong.setBackground(new java.awt.Color(82, 173, 255));
+        pnlSong.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        sldSong.setBackground(new java.awt.Color(34, 92, 137));
+        sldSong.setForeground(new java.awt.Color(182, 24, 143));
+        sldSong.setValue(0);
+        sldSong.setEnabled(false);
+        sldSong.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                sldSongMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                sldSongMouseReleased(evt);
+            }
+        });
+
+        lblSongLength.setForeground(new java.awt.Color(8, 6, 65));
+        lblSongLength.setText("00:00");
+
+        btnOpenMp3File.setBackground(btnPlaySong.getBackground());
+        btnOpenMp3File.setForeground(btnPlaySong.getForeground());
+        btnOpenMp3File.setText("Open MP3 File");
+        btnOpenMp3File.setToolTipText("Open a .mp3 file to play it while editing");
+        btnOpenMp3File.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOpenMp3FileActionPerformed(evt);
+            }
+        });
+
+        btnPlaySong.setBackground(new java.awt.Color(40, 99, 156));
+        btnPlaySong.setForeground(new java.awt.Color(255, 195, 230));
+        btnPlaySong.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/play.png"))); // NOI18N
+        btnPlaySong.setEnabled(false);
+        btnPlaySong.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPlaySongActionPerformed(evt);
+            }
+        });
+
+        btnPauseSong.setBackground(new java.awt.Color(40, 99, 156));
+        btnPauseSong.setForeground(new java.awt.Color(255, 195, 230));
+        btnPauseSong.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/stop.png"))); // NOI18N
+        btnPauseSong.setEnabled(false);
+        btnPauseSong.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPauseSongActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout pnlSongLayout = new javax.swing.GroupLayout(pnlSong);
+        pnlSong.setLayout(pnlSongLayout);
+        pnlSongLayout.setHorizontalGroup(
+            pnlSongLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlSongLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnOpenMp3File, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(30, 30, 30)
+                .addComponent(btnPlaySong)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnPauseSong)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(sldSong, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lblSongLength)
+                .addContainerGap())
+        );
+        pnlSongLayout.setVerticalGroup(
+            pnlSongLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnlSongLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(pnlSongLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnPauseSong)
+                    .addGroup(pnlSongLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(sldSong, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblSongLength)
+                        .addComponent(btnOpenMp3File)
+                        .addComponent(btnPlaySong)))
+                .addContainerGap())
+        );
 
         javax.swing.GroupLayout pnl1Layout = new javax.swing.GroupLayout(pnl1);
         pnl1.setLayout(pnl1Layout);
@@ -243,13 +345,14 @@ public class LRCEditor extends javax.swing.JFrame {
             .addGroup(pnl1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(lblTitle)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 96, Short.MAX_VALUE)
-                .addComponent(btnOpenFile)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 331, Short.MAX_VALUE)
+                .addComponent(btnOpenLrcFile)
                 .addGap(18, 18, 18)
                 .addComponent(btnSaveLRC)
                 .addContainerGap())
+            .addComponent(pnlSong, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(pnl1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(tab1, javax.swing.GroupLayout.DEFAULT_SIZE, 593, Short.MAX_VALUE))
+                .addComponent(tab1))
         );
         pnl1Layout.setVerticalGroup(
             pnl1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -258,12 +361,14 @@ public class LRCEditor extends javax.swing.JFrame {
                 .addGroup(pnl1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblTitle)
                     .addComponent(btnSaveLRC)
-                    .addComponent(btnOpenFile))
-                .addContainerGap(355, Short.MAX_VALUE))
+                    .addComponent(btnOpenLrcFile))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 338, Short.MAX_VALUE)
+                .addComponent(pnlSong, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(pnl1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl1Layout.createSequentialGroup()
-                    .addGap(47, 47, 47)
-                    .addComponent(tab1, javax.swing.GroupLayout.DEFAULT_SIZE, 347, Short.MAX_VALUE)))
+                .addGroup(pnl1Layout.createSequentialGroup()
+                    .addGap(48, 48, 48)
+                    .addComponent(tab1)
+                    .addGap(40, 40, 40)))
         );
 
         tab1.getAccessibleContext().setAccessibleName("tab1");
@@ -350,15 +455,15 @@ public class LRCEditor extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    // OPEN LRC FILE BUTTON
-    private void btnOpenFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpenFileActionPerformed
-        openFile();
-    }//GEN-LAST:event_btnOpenFileActionPerformed
+    // OPEN LRC FILE (BUTTON)
+    private void btnOpenLrcFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpenLrcFileActionPerformed
+        openLrcFile();
+    }//GEN-LAST:event_btnOpenLrcFileActionPerformed
 
     // CHANGE LYRIC SELECTION
     private void lstLyricsValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lstLyricsValueChanged
         if (!evt.getValueIsAdjusting()) {
-            changeSelection(this.lstLyrics.getSelectedValue());
+            selectLyric(this.lstLyrics.getSelectedValue());
         }
     }//GEN-LAST:event_lstLyricsValueChanged
 
@@ -377,7 +482,7 @@ public class LRCEditor extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnDeleteActionPerformed
 
-    // SAVE LINE
+    // SAVE LINE (BUTTON)
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         try {
             Lyric savedLyric = new Lyric(stringToDuration(txtTimestamp.getText()), txtLyric.getText());
@@ -395,17 +500,20 @@ public class LRCEditor extends javax.swing.JFrame {
                         }
                     } else {
                         int difference = lyric.getTimestamp().compareTo(savedLyric.getTimestamp());
+
                         // If timestamp is the same, replace lyric
                         if (difference == 0) {
                             lyric.setLyric(savedLyric.getLyric());
                             break;
                         }
+
                         // If inserted timestamp is smaller, add the lyric in that position
                         if (difference > 0) {
                             listModel.add(i, savedLyric);
                             break;
                         }
                     }
+
                     // If there is nothing after, add the lyric at the end
                     if (i + 1 == listModel.size()) {
                         listModel.addElement(savedLyric);
@@ -414,8 +522,10 @@ public class LRCEditor extends javax.swing.JFrame {
                 this.lstLyrics.clearSelection();
             } else {
                 listModel.addElement(savedLyric);
-                resetSaveButtons();
             }
+
+            // Reset save buttons and other functions
+            resetSaveButtons();
 
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Invalid timestamp. Try again. (" + e.getMessage() + ")");
@@ -429,12 +539,13 @@ public class LRCEditor extends javax.swing.JFrame {
         saveFile();
     }//GEN-LAST:event_btnSaveLRCActionPerformed
 
-    // OPEN "CHANGE TIMESTAMPS" POPUP MENU
+    // OPEN "CHANGE TIMESTAMPS" POPUP MENU (MENU ITEM)
     private void mniTimestampsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniTimestampsActionPerformed
         String value = JOptionPane.showInputDialog("Move all timestamps by an amount of time (+/-)");
         try {
             // Remove all brackets
             value = trimBrackets(value);
+
             // Get sign if provided
             boolean addition = true;
             char sign = value.charAt(0);
@@ -443,7 +554,10 @@ public class LRCEditor extends javax.swing.JFrame {
                 value = value.substring(1).strip();
                 addition = sign == '+';
             }
+
+            // Get timestamp
             Duration timestamp = stringToDuration(value);
+
             // Check if any timestamp would be negative
             if (!addition) {
                 for (int i = 0; i < listModel.size(); i++) {
@@ -456,10 +570,13 @@ public class LRCEditor extends javax.swing.JFrame {
                     }
                 }
             }
+
             // Perform addition/substraction
             for (int i = 0; i < listModel.size(); i++) {
                 listModel.getElementAt(i).moveTimestamp(timestamp, addition);
             }
+
+            // Update lyrics list UI
             this.lstLyrics.updateUI();
 
         } catch (NegativeTimestampException e) {
@@ -469,22 +586,22 @@ public class LRCEditor extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_mniTimestampsActionPerformed
 
-    // SAVE LRC FILE (SHORTCUT)
+    // SAVE LRC FILE (MENU ITEM)
     private void mniSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniSaveActionPerformed
         saveFile();
     }//GEN-LAST:event_mniSaveActionPerformed
 
-    // OPEN LRC FILE (SHORTCUT)
+    // OPEN LRC FILE (MENU ITEM)
     private void mniOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniOpenActionPerformed
-        openFile();
+        openLrcFile();
     }//GEN-LAST:event_mniOpenActionPerformed
 
-    // NEW FILE
+    // NEW FILE (MENU ITEM)
     private void mniNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniNewActionPerformed
-        newFile();
+        resetLrc();
     }//GEN-LAST:event_mniNewActionPerformed
 
-    // SAVE FILE AS
+    // SAVE FILE AS (MENU ITEM)
     private void mniSaveAsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniSaveAsActionPerformed
         try {
             saveFileAs();
@@ -496,14 +613,371 @@ public class LRCEditor extends javax.swing.JFrame {
     // CHANGE TABS
     private void tab1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tab1StateChanged
         switch (tab1.getSelectedIndex()) {
-            // Change to first tab
             case 0 ->
+                // Change to first tab
                 setTxaTextFromList();
-            // Change to second tab
             case 1 ->
+                // Change to second tab
                 setListLyricsFromTxa();
         }
     }//GEN-LAST:event_tab1StateChanged
+
+    // OPEN SONG FILE (BUTTON)
+    private void btnOpenMp3FileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpenMp3FileActionPerformed
+        openSongFile();
+    }//GEN-LAST:event_btnOpenMp3FileActionPerformed
+
+    // PLAY SONG (BUTTON)
+    private void btnPlaySongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPlaySongActionPerformed
+        playSong();
+    }//GEN-LAST:event_btnPlaySongActionPerformed
+
+    // PAUSE SONG (BUTTON)
+    private void btnPauseSongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPauseSongActionPerformed
+        pauseSong();
+    }//GEN-LAST:event_btnPauseSongActionPerformed
+
+    // MOUSE PRESS PLAYBACK SLIDER
+    private void sldSongMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sldSongMousePressed
+        // Pause without setting is playing as false, so it can resume after adjusting
+        this.mp3Player.pauseSong();
+    }//GEN-LAST:event_sldSongMousePressed
+
+    // MOUSE RELEASE PLAYBACK SLIDER
+    private void sldSongMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sldSongMouseReleased
+        // Get requested frame
+        JSlider source = (JSlider) evt.getSource();
+        int frame = source.getValue();
+
+        // Update mp3 player's current frame and millis
+        this.mp3Player.setCurrentFrame(frame);
+        this.mp3Player.setCurrentMillis((int) (frame / (2.08 * this.mp3Player.getSong().getFrameRatePerMillis())));
+
+        // If song was playing before sliding
+        if (this.mp3Player.wasPlaying()) {
+            // Resume the song
+            this.mp3Player.playSong();
+            this.btnPlaySong.setEnabled(false);
+            this.btnPauseSong.setEnabled(true);
+        }
+    }//GEN-LAST:event_sldSongMouseReleased
+
+    // Select and play MP3 file
+    private void openSongFile() {
+        try {
+            this.fchOpen.setDialogTitle("Select MP3 file");
+            this.fchOpen.setFileFilter(MP3_EXTENSION);
+            this.mp3Player.loadSong(new Song(selectFile()));
+            this.lblSongLength.setText(this.mp3Player.getSong().getLength());
+
+        } catch (TaskCancelledException e) {
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Problem accessing file: " + e.getMessage());
+        }
+    }
+
+    // Select and read LRC file
+    private void openLrcFile() {
+        try {
+            this.fchOpen.setDialogTitle("Select LRC file");
+            this.fchOpen.setFileFilter(LRC_EXTENSION);
+            this.lrcPath = selectFile();
+
+            // Open edit tab
+            tab1.setSelectedIndex(1);
+
+            // Clear the list and read the file
+            this.listModel.clear();
+            readLrcFile(this.lrcPath);
+            resetSaveButtons();
+
+        } catch (TaskCancelledException e) {
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Problem accessing file: " + e.getMessage());
+        }
+    }
+
+    // Select file and return its absolute path
+    private String selectFile() throws IOException, TaskCancelledException {
+        int returnVal = fchOpen.showOpenDialog(this);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            // Return selected file's absolute path
+            File file = fchOpen.getSelectedFile();
+            return file.getAbsolutePath();
+        } else {
+            // File chooser was cancelled/discarded
+            throw new TaskCancelledException();
+        }
+    }
+
+    // Read LRC file and extract lyrics from it
+    private void readLrcFile(String path) throws FileNotFoundException {
+        File myObj = new File(path);
+        try (Scanner myReader = new Scanner(myObj)) {
+            while (myReader.hasNextLine()) {
+                String data = myReader.nextLine();
+
+                // Skip empty lines
+                if (data.trim().isEmpty()) {
+                    continue;
+                }
+
+                // Only add item to list if it's a timestamp
+                if (Character.isDigit(data.charAt(1))) {
+                    Lyric lyric = stringToLyric(data);
+                    listModel.addElement(lyric);
+                    continue;
+                }
+
+                // Save song length if declared
+                if (data.startsWith("[length: ")) {
+                    this.mp3Player.addSongLength(data.split("\\[length:", 2)[1].split("\\]", 2)[0].strip());
+                }
+            }
+        }
+    }
+
+    // Reset file path, lyrics, tabs, text areas, selected lyric, buttons.
+    private void resetLrc() {
+        this.lrcPath = null;
+        this.listModel.clear();
+        this.tab1.setSelectedIndex(0);
+        this.txaLyrics.setText("");
+        selectLyric(null);
+        resetSaveButtons();
+    }
+
+    // Save file
+    private void saveFile() {
+        try {
+            // If lrcPath is null, save as new file
+            if (this.lrcPath == null) {
+                // Get current song's path
+                String songPath = this.mp3Player.getSong().getAbsolutePath();
+
+                // If songPath isn't null
+                if (songPath != null) {
+                    // Ask the user for confirmation
+                    int confirmResult = JOptionPane.showConfirmDialog(null, "Save LRC file with song's filename?");
+
+                    // If user confirmed, set songPath as lrcPath (with .lrc extension) and save
+                    if (confirmResult == JOptionPane.YES_OPTION) {
+                        // Set lrcPath to current song's path and name (but with lrc extension)
+                        this.lrcPath = songPath.replace(".mp3", ".lrc");
+
+                        // Save .lrc file
+                        saveToFile(this.lrcPath);
+
+                        // Return
+                        return;
+                    }
+                }
+
+                // Save as new file
+                saveFileAs();
+            } else {
+                // Overwrite file
+                saveToFile(this.lrcPath);
+            }
+
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "An error occurred while saving file: " + e.getMessage());
+        }
+    }
+
+    // Save file as...
+    private void saveFileAs() throws IOException {
+        int option = fchSave.showSaveDialog(null);
+        if (option == JFileChooser.APPROVE_OPTION) {
+            // Get selected file and its absolute path
+            File file = fchSave.getSelectedFile();
+            this.lrcPath = file.getAbsolutePath();
+
+            // Save file
+            saveToFile(this.lrcPath);
+
+            // Dialog
+            JOptionPane.showMessageDialog(null, "File Saved as: " + file.getName());
+        }
+    }
+
+    // Save information to file
+    private void saveToFile(String path) throws IOException {
+        String length = this.mp3Player.getSong().getLength();
+
+        if (length == null) {
+            // If length is null, use last lyric's timestamp
+            length = trimBrackets(Lyric.timestampToString(listModel.lastElement().getTimestamp()));
+        }
+
+        try (FileWriter myWriter = new FileWriter(path)) {
+            // Write length and tool
+            myWriter.write("[length: " + length + "]\n[tool: LeVel's LRC Editor]\n");
+
+            // Write lyrics with timestamps
+            for (int i = 0; i < this.listModel.size(); i++) {
+                myWriter.write(this.listModel.elementAt(i).toLrcString());
+            }
+        }
+    }
+
+    // Select lyric and reset Text Inputs and Delete Button
+    private void selectLyric(Lyric lyric) {
+        // If lyric is null, create new lyric
+        if (lyric == null) {
+            lyric = new Lyric();
+        }
+
+        // Reset fields
+        this.selectedLyric = lyric;
+        this.txtTimestamp.setText(Lyric.timestampToString(this.selectedLyric.getTimestamp()));
+        this.txtLyric.setText(this.selectedLyric.getLyric());
+        this.btnDelete.setEnabled(lyric.getTimestamp() != null);
+    }
+
+    // Enable/disable save buttons and other operations
+    private void resetSaveButtons() {
+        // Enable if list has items, otherwise disable
+        boolean enabled = !listModel.isEmpty();
+
+        // Disable if any timestamp is null
+        if (enabled) {
+            for (var l : listModel.toArray()) {
+                if (((Lyric) l).getTimestamp() == null) {
+                    enabled = false;
+                    break;
+                }
+            }
+        }
+
+        // Enable/disable elements
+        this.btnSaveLRC.setEnabled(enabled);
+        this.mniSave.setEnabled(enabled);
+        this.mniSaveAs.setEnabled(enabled);
+        this.mniTimestamps.setEnabled(enabled);
+    }
+
+    // Play song and enable pause button
+    private void playSong() {
+        this.mp3Player.playSong();
+
+        // Enable/disable pause and play buttons
+        this.btnPlaySong.setEnabled(false);
+        this.btnPauseSong.setEnabled(true);
+    }
+
+    // Pause song and enable play button
+    private void pauseSong() {
+        this.mp3Player.hitPauseSong();
+
+        // Enable/disable pause and play buttons
+        this.btnPlaySong.setEnabled(true);
+        this.btnPauseSong.setEnabled(false);
+    }
+
+    // Set text area text from listModel values
+    private void setTxaTextFromList() {
+        // Reset text area
+        txaLyrics.setText("");
+
+        // Loop through listModel and write lines into text area
+        for (int i = 0; i < this.listModel.size(); i++) {
+            var line = this.listModel.elementAt(i).getLyric() + (i + 1 < this.listModel.size() ? "\n" : "");
+            txaLyrics.setText(txaLyrics.getText().concat(line));
+        }
+    }
+
+    // Set listModel values from text area
+    private void setListLyricsFromTxa() {
+        // Get text from text area
+        String text = txaLyrics.getText();
+
+        // In case last line is empty, add it to listModel as line break
+        if (!text.isBlank() && text.endsWith("")) {
+            text += "\n";
+        }
+
+        // Save current lyrics and get text area's lines
+        var savedLyrics = listModel.toArray();
+        var lines = text.lines().toList();
+
+        // Clear List Model
+        listModel.clear();
+
+        // Loop through text area's lines
+        for (var line : lines) {
+            // Create new Lyric with this line
+            var newLyric = new Lyric(null, line);
+
+            // Loop through saved lyrics
+            for (int i = 0; i < savedLyrics.length; i++) {
+                // If saved lyric has same text as new lyric
+                if (((Lyric) savedLyrics[i]).getLyric().equals(line)) {
+                    // Set new lyric's timestamp from saved lyric
+                    newLyric.setTimestamp(((Lyric) savedLyrics[i]).getTimestamp());
+
+                    // Remove saved lyric from array
+                    savedLyrics = ArrayUtils.remove(savedLyrics, i);
+
+                    // Break inner loop
+                    break;
+                }
+            }
+
+            // Add new lyric to listModel
+            listModel.addElement(newLyric);
+        }
+
+        // Reset buttons and other functions
+        resetSaveButtons();
+
+        // Reset selected lyric and text inputs
+        selectLyric(null);
+    }
+
+    // Convert String to Lyric
+    private Lyric stringToLyric(String fullLyric) throws NumberFormatException {
+        // Get timestamp without brackets
+        Duration timestamp = stringToDuration(fullLyric.split("\\]", 2)[0]);
+
+        // Get everything after first close bracket
+        String lyric = fullLyric.split("\\]", 2)[1].strip();
+
+        return new Lyric(timestamp, lyric);
+    }
+
+    // Convert String to Duration
+    private Duration stringToDuration(String string) throws NumberFormatException {
+        String[] fullTime = trimBrackets(string).split("[:.]");
+        Duration timestamp = Duration
+                .ofMinutes(Integer.parseInt(fullTime[0]))
+                .plusSeconds(Integer.parseInt(fullTime[1]))
+                .plusMillis(Integer.parseInt(fullTime[2]));
+
+        return timestamp;
+    }
+
+    // Trim brackets
+    private String trimBrackets(String string) {
+        return string.replaceAll("[\\[\\]]", "");
+    }
+
+    // Set song slider's max size
+    public void setSldSongMaximum(int maximum) {
+        this.sldSong.setMaximum(maximum);
+    }
+
+    // Set song slider's position
+    public void setSldSongValue(int value) {
+        this.sldSong.setValue(value);
+    }
+
+    // Enable mp3 player buttons and slider
+    public void enableMp3PlayerButtons() {
+        this.btnPlaySong.setEnabled(true);
+        this.btnPauseSong.setEnabled(false);
+        this.sldSong.setEnabled(true);
+    }
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -535,203 +1009,18 @@ public class LRCEditor extends javax.swing.JFrame {
         });
     }
 
-    // NEW FILE
-    private void newFile() {
-        this.filePath = null;
-        this.songLength = "?";
-        this.listModel.clear();
-        this.tab1.setSelectedIndex(0);
-        this.txaLyrics.setText("");
-        changeSelection(null);
-        resetSaveButtons();
-    }
-
-    // OPEN FILE
-    private void openFile() {
-        int returnVal = fchOpen.showOpenDialog(this);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File file = fchOpen.getSelectedFile();
-            try {
-                // Open edit tab
-                tab1.setSelectedIndex(1);
-                // Clear the list and read the file
-                this.listModel.clear();
-                this.songLength = "?";
-                this.filePath = file.getAbsolutePath();
-                readFile(this.filePath);
-                resetSaveButtons();
-
-            } catch (IOException ex) {
-                JOptionPane.showMessageDialog(null, "Problem accessing file: " + file.getAbsolutePath());
-            }
-        }
-    }
-
-    // READ FILE AND CONVERT TO LYRICS
-    private void readFile(String path) throws FileNotFoundException {
-        File myObj = new File(path);
-        try (Scanner myReader = new Scanner(myObj)) {
-            while (myReader.hasNextLine()) {
-                String data = myReader.nextLine();
-                // Skip empty lines
-                if (data.trim().isEmpty()) {
-                    continue;
-                }
-                // Only add item to list if it's a timestamp
-                if (Character.isDigit(data.charAt(1))) {
-                    Lyric lyric = stringToLyric(data);
-                    listModel.addElement(lyric);
-                    continue;
-                }
-                // Save song length if declared
-                if (data.startsWith("[length: ")) {
-                    this.songLength = data.split("\\[length:", 2)[1].split("\\]", 2)[0].strip();
-                }
-            }
-        }
-    }
-
-    // SAVE FILE
-    private void saveFile() {
-        try {
-            if (this.filePath == null) {
-                // Save as new file
-                saveFileAs();
-            } else {
-                // Overwrite file
-                saveToFile(this.filePath);
-            }
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "An error occurred while saving file: " + e.getMessage());
-        }
-    }
-
-    // SAVE FILE AS
-    private void saveFileAs() throws IOException {
-        int option = fchSave.showSaveDialog(null);
-        if (option == JFileChooser.APPROVE_OPTION) {
-            File file = fchSave.getSelectedFile();
-            this.filePath = file.getAbsolutePath();
-            saveToFile(this.filePath);
-            JOptionPane.showMessageDialog(null, "File Saved as: " + file.getName());
-        }
-    }
-
-    // SAVE TO FILE
-    private void saveToFile(String path) throws IOException {
-        try (FileWriter myWriter = new FileWriter(path)) {
-            myWriter.write("[length: " + this.songLength + "]\n[tool: LeVel's LRC Editor]\n");
-            for (int i = 0; i < this.listModel.size(); i++) {
-                myWriter.write(this.listModel.elementAt(i).toLyricString());
-            }
-        }
-    }
-
-    // CHANGE SELECTION
-    private void changeSelection(Lyric lyric) {
-        if (lyric == null) {
-            lyric = new Lyric();
-        }
-        this.selectedLyric = lyric;
-        this.txtTimestamp.setText(Lyric.timestampToString(this.selectedLyric.getTimestamp()));
-        this.txtLyric.setText(this.selectedLyric.getLyric());
-        this.btnDelete.setEnabled(lyric.getTimestamp() != null);
-    }
-
-    // SET TEXT AREA WITH LIST MODEL LYRICS
-    private void setTxaTextFromList() {
-        txaLyrics.setText("");
-        for (int i = 0; i < this.listModel.size(); i++) {
-            var line = this.listModel.elementAt(i).getLyric() + (i + 1 < this.listModel.size() ? "\n" : "");
-            txaLyrics.setText(txaLyrics.getText().concat(line));
-        }
-    }
-
-    // SET LIST MODEL LYRICS WITH TEXT AREA
-    private void setListLyricsFromTxa() {
-        String text = txaLyrics.getText();
-        // In case final line is empty
-        if (text.endsWith("")) {
-            text += "\n";
-        }
-        var lines = text.lines().toList();
-        var savedLyrics = listModel.toArray();
-        // Clear List Model
-        listModel.clear();
-        // Loop through text area's lines
-        for (var line : lines) {
-            var lyric = new Lyric(null, line);
-            for (int i = 0; i < savedLyrics.length; i++) {
-                if (((Lyric) savedLyrics[i]).getLyric().equals(line)) {
-                    lyric.setTimestamp(((Lyric) savedLyrics[i]).getTimestamp());
-                    savedLyrics = ArrayUtils.remove(savedLyrics, i);
-                    break;
-                }
-            }
-            listModel.addElement(lyric);
-        }
-        resetSaveButtons();
-        changeSelection(null);
-    }
-
-    // CONVERT STRING INTO LYRIC
-    private Lyric stringToLyric(String fullLyric) throws NumberFormatException {
-        // Get timestamp without brackets
-        Duration timestamp = stringToDuration(fullLyric.split("\\]", 2)[0]);
-        // Get everything after first close bracket
-        String lyric = fullLyric.split("\\]", 2)[1].strip();
-        return new Lyric(timestamp, lyric);
-    }
-
-    // CONVERT STRING INTO DURATION
-    private Duration stringToDuration(String string) throws NumberFormatException {
-        String[] fullTime = trimBrackets(string).split("[:.]");
-        Duration timestamp = Duration
-                .ofMinutes(Integer.parseInt(fullTime[0]))
-                .plusSeconds(Integer.parseInt(fullTime[1]))
-                .plusMillis(Integer.parseInt(fullTime[2]));
-        return timestamp;
-    }
-
-    // ENABLE/DISABLE FILE/LYRICS OPERATIONS
-    private void resetSaveButtons() {
-        // Enable if list has items, otherwise disable
-        boolean enabled = !listModel.isEmpty();
-        // Disable if any timestamp is null
-        if (enabled) {
-            for (var l : listModel.toArray()) {
-                if (((Lyric) l).getTimestamp() == null) {
-                    enabled = false;
-                    break;
-                }
-            }
-        }
-        this.btnSaveLRC.setEnabled(enabled);
-        this.mniSave.setEnabled(enabled);
-        this.mniSaveAs.setEnabled(enabled);
-        this.mniTimestamps.setEnabled(enabled);
-    }
-
-    // TRIM BRACKETS
-    private String trimBrackets(String string) {
-        return string.replaceAll("[\\[\\]]", "");
-    }
-
-    // Default List Model
-    private final DefaultListModel<Lyric> listModel;
-    private Lyric selectedLyric;
-    private String filePath;
-    private String songLength;
-    private String defaultPath = ""; // Placeholder
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDelete;
-    private javax.swing.JButton btnOpenFile;
+    private javax.swing.JButton btnOpenLrcFile;
+    private javax.swing.JButton btnOpenMp3File;
+    private javax.swing.JButton btnPauseSong;
+    private javax.swing.JButton btnPlaySong;
     private javax.swing.JButton btnSave;
     private javax.swing.JButton btnSaveLRC;
     private javax.swing.JFileChooser fchOpen;
     private javax.swing.JFileChooser fchSave;
     private javax.swing.JLabel lblSetLyrics;
+    private javax.swing.JLabel lblSongLength;
     private javax.swing.JLabel lblTitle;
     private javax.swing.JList<Lyric> lstLyrics;
     private javax.swing.JMenuItem mniNew;
@@ -746,8 +1035,10 @@ public class LRCEditor extends javax.swing.JFrame {
     private javax.swing.JPanel pnl1;
     private javax.swing.JPanel pnlEditLyrics;
     private javax.swing.JPanel pnlSetLyrics;
+    private javax.swing.JPanel pnlSong;
     private javax.swing.JScrollPane scrLyrics;
     private javax.swing.JScrollPane scrTxaLyrics;
+    private javax.swing.JSlider sldSong;
     private javax.swing.JPopupMenu.Separator sprMnuFile;
     private javax.swing.JTabbedPane tab1;
     private javax.swing.JTextArea txaLyrics;
