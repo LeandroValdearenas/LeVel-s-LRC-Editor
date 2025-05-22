@@ -38,12 +38,12 @@ public class Lyric {
     @Override
     public String toString() {
         // Two spaces for better visibility
-        return timestampToString(this.timestamp) + "  " + lyric;
+        return String.format("[%s]  %s", timestampToString(this.timestamp), lyric);
     }
     
     public String toLrcString() {
         // Only one space, line breaks
-        return '\n' + timestampToString(this.timestamp) + ' ' + lyric;
+        return String.format("\n[%s] %s", timestampToString(this.timestamp), lyric);
     }
 
     public void moveTimestamp(Duration offset, boolean addition) {
@@ -54,6 +54,6 @@ public class Lyric {
         if (timestamp == null) {
             return "";
         }
-        return String.format("[%02d:%02d.%03d]", timestamp.toMinutesPart(), timestamp.toSecondsPart(), timestamp.toMillisPart());
+        return String.format("%02d:%02d.%03d", timestamp.toMinutesPart(), timestamp.toSecondsPart(), timestamp.toMillisPart());
     }
 }

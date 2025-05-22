@@ -19,7 +19,6 @@ public class Mp3Player extends PlaybackListener {
 
     // Song states
     private boolean isPaused;
-    private boolean isPlaying;
     private boolean hasFinished;
     private int currentFrame;
     private int currentMillis;
@@ -37,14 +36,10 @@ public class Mp3Player extends PlaybackListener {
         this.lrcEditor = lrcEditor;
     }
 
-    public boolean wasPlaying() {
-        return isPlaying;
-    }
-    
     public Song getSong() {
         return song;
     }
-    
+
     public void setCurrentFrame(int currentFrame) {
         this.currentFrame = currentFrame;
     }
@@ -52,7 +47,7 @@ public class Mp3Player extends PlaybackListener {
     public void setCurrentMillis(int currentMillis) {
         this.currentMillis = currentMillis;
     }
-    
+
     // Add Song Length, only if song length is null.
     public void addSongLength(String length) {
         if (this.song.getLength() == null) {
@@ -61,38 +56,26 @@ public class Mp3Player extends PlaybackListener {
     }
 
     public void loadSong(Song song) {
-        this.song = song;
-
         // Stop song first
         if (!hasFinished) {
-            stopSong();
+            pauseSong();
         }
+        
+        // Set song
+        this.song = song;
 
         // Play song
         if (this.song != null) {
             currentFrame = 0;
             currentMillis = 0;
-            lrcEditor.setSldSongMaximum(song.getFrameCount());
-            lrcEditor.setSldSongValue(0);
-            lrcEditor.enableMp3PlayerButtons();
+            lrcEditor.setSldPlaybackMaximum(song.getFrameCount());
+            lrcEditor.setSldPlaybackValue(0);
+            lrcEditor.enableMp3Player();
         }
     }
 
-    // Set is playing to false and pause the song
-    public void hitPauseSong() {
-        isPlaying = false;
-        pauseSong();
-    }
-    
-    // If advanced player is not null, set as paused and stop the song
     public void pauseSong() {
-        if (advancedPlayer != null) {
-            isPaused = true;
-            stopSong();
-        }
-    }
-
-    public void stopSong() {
+        isPaused = true;
         if (advancedPlayer != null) {
             advancedPlayer.stop();
             advancedPlayer.close();
@@ -106,20 +89,34 @@ public class Mp3Player extends PlaybackListener {
                 // Read data
                 FileInputStream fis = new FileInputStream(song.getAbsolutePath());
                 BufferedInputStream bis = new BufferedInputStream(fis);
-                
+
                 // Instance advanced player
                 advancedPlayer = new AdvancedPlayer(bis);
                 advancedPlayer.setPlayBackListener(this);
+                
+                hasFinished = false;
+                
                 startMusicThread();
                 startSongSliderThread();
-                
-                // Set is playing as true
-                isPlaying = true;
 
             } catch (FileNotFoundException | JavaLayerException e) {
                 System.out.println("An error has occurred while trying to play song: " + e.getMessage());
             }
         }
+    }
+
+    public void endSong() {
+        pauseSong();
+        resetValues();
+    }
+    
+    private void resetValues() {
+        isPaused = false;
+        hasFinished = true;
+        currentFrame = 0;
+        currentMillis = 0;
+        lrcEditor.setSldPlaybackValue(0);
+        lrcEditor.enablePlay();
     }
 
     // START MUSIC THREAD
@@ -131,12 +128,14 @@ public class Mp3Player extends PlaybackListener {
                         isPaused = false;
                         threadSync.notify();
                     }
+                    
                     // Resume last played
                     advancedPlayer.play(currentFrame, Integer.MAX_VALUE);
                 } else {
                     // Play from beginning
                     advancedPlayer.play();
                 }
+                
             } catch (JavaLayerException e) {
                 System.out.println("An error has occurred while trying to play music file: " + e.getMessage());
             }
@@ -151,7 +150,7 @@ public class Mp3Player extends PlaybackListener {
                     synchronized (threadSync) {
                         threadSync.wait();
                     }
-                    
+
                 } catch (InterruptedException e) {
                     System.out.println("An error has occurred while trying to set up song slider: " + e.getMessage());
                 }
@@ -159,15 +158,15 @@ public class Mp3Player extends PlaybackListener {
 
             while (!isPaused && !hasFinished) {
                 try {
-                    currentMillis++;
+                    lrcEditor.setLblSongTimestampValue((int) (++currentMillis * 2.08));
                     var calculatedFrame = (int) (currentMillis * 2.08 * song.getFrameRatePerMillis());
-                    
+
                     // Update slider UI
-                    lrcEditor.setSldSongValue(calculatedFrame);
-                    
+                    lrcEditor.setSldPlaybackValue(calculatedFrame);
+
                     // Move forward by 1 millisecond (intentional Thread.sleep in loop)
                     Thread.sleep(1);
-                    
+
                 } catch (InterruptedException e) {
                     System.out.println("An error has occurred while trying to set up song slider: " + e.getMessage());
                 }
@@ -176,23 +175,12 @@ public class Mp3Player extends PlaybackListener {
     }
 
     @Override
-    public void playbackStarted(PlaybackEvent evt) {
-        hasFinished = false;
-    }
-
-    @Override
     public void playbackFinished(PlaybackEvent evt) {
         if (isPaused) {
             currentFrame += (int) (evt.getFrame() * song.getFrameRatePerMillis());
         } else {
             advancedPlayer = null;
-            isPlaying = false;
-            isPaused = true;
-            hasFinished = true;
-            currentFrame = 0;
-            currentMillis = 0;
-            lrcEditor.setSldSongValue(0);
-            lrcEditor.enableMp3PlayerButtons();
+            resetValues();
         }
     }
 }

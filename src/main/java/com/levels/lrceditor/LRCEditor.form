@@ -88,6 +88,76 @@
             </MenuItem>
           </SubComponents>
         </Menu>
+        <Menu class="javax.swing.JMenu" name="mnuSong">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Song"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="mniOpenMp3">
+              <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="Ctrl+M"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Open MP3 File..."/>
+                <Property name="toolTipText" type="java.lang.String" value="Open an .mp3 file to start playing while editing"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mniOpenMp3ActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="mniClearMp3">
+              <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="Shift+Ctrl+M"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Clear Song"/>
+                <Property name="toolTipText" type="java.lang.String" value="Remove song currently being played in the mp3 player"/>
+                <Property name="enabled" type="boolean" value="false"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mniClearMp3ActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="sprMnuSong">
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="mniPlay">
+              <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="Ctrl+P"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Play Song"/>
+                <Property name="enabled" type="boolean" value="false"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mniPlayActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="mniPause">
+              <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="Ctrl+P"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Pause Song"/>
+                <Property name="enabled" type="boolean" value="false"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mniPauseActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="mniStop">
+              <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="Shift+Ctrl+P"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Stop Song"/>
+                <Property name="enabled" type="boolean" value="false"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mniStopActionPerformed"/>
+              </Events>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
         <Menu class="javax.swing.JMenu" name="mnuTools">
           <Properties>
             <Property name="text" type="java.lang.String" value="Tools"/>
@@ -169,7 +239,7 @@
               <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="lblTitle" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="331" max="32767" attributes="0"/>
+                  <EmptySpace pref="193" max="32767" attributes="0"/>
                   <Component id="btnOpenLrcFile" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="btnSaveLRC" min="-2" max="-2" attributes="0"/>
@@ -190,7 +260,7 @@
                       <Component id="btnSaveLRC" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="btnOpenLrcFile" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="338" max="32767" attributes="0"/>
+                  <EmptySpace pref="359" max="32767" attributes="0"/>
                   <Component id="pnlSong" min="-2" max="-2" attributes="0"/>
               </Group>
               <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
@@ -281,7 +351,7 @@
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="scrTxaLyrics" alignment="1" pref="820" max="32767" attributes="0"/>
+                              <Component id="scrTxaLyrics" alignment="1" pref="682" max="32767" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="lblSetLyrics" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
@@ -297,7 +367,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="lblSetLyrics" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="scrTxaLyrics" pref="267" max="32767" attributes="0"/>
+                          <Component id="scrTxaLyrics" pref="288" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -369,7 +439,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="txtTimestamp" min="-2" pref="110" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="txtLyric" pref="548" max="32767" attributes="0"/>
+                          <Component id="txtLyric" pref="410" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="btnSave" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
@@ -379,7 +449,7 @@
                       <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="scrLyrics" pref="820" max="32767" attributes="0"/>
+                              <Component id="scrLyrics" pref="682" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -388,7 +458,7 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace pref="272" max="32767" attributes="0"/>
+                          <EmptySpace pref="293" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="txtLyric" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="txtTimestamp" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -400,7 +470,7 @@
                       <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" max="-2" attributes="0"/>
-                              <Component id="scrLyrics" pref="257" max="32767" attributes="0"/>
+                              <Component id="scrLyrics" pref="278" max="32767" attributes="0"/>
                               <EmptySpace min="-2" pref="38" max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -517,8 +587,10 @@
                       <Component id="btnPlaySong" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="btnPauseSong" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="lblSongTimestamp" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="sldSong" max="32767" attributes="0"/>
+                      <Component id="sldPlayback" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="lblSongLength" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -531,11 +603,14 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="1" attributes="0">
                           <Component id="btnPauseSong" min="-2" max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="sldSong" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="lblSongLength" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="btnOpenMp3File" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="btnPlaySong" alignment="1" min="-2" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="sldPlayback" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="lblSongLength" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="btnOpenMp3File" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="lblSongTimestamp" alignment="3" min="-2" max="-2" attributes="0"/>
+                              </Group>
                           </Group>
                       </Group>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -544,7 +619,7 @@
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JSlider" name="sldSong">
+            <Component class="javax.swing.JSlider" name="sldPlayback">
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="89" green="5c" red="22" type="rgb"/>
@@ -556,8 +631,8 @@
                 <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
-                <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="sldSongMousePressed"/>
-                <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="sldSongMouseReleased"/>
+                <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="sldPlaybackMousePressed"/>
+                <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="sldPlaybackMouseReleased"/>
               </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="lblSongLength">
@@ -565,7 +640,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="41" green="6" red="8" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="00:00"/>
+                <Property name="text" type="java.lang.String" value="00:00.000"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="btnOpenMp3File">
@@ -616,6 +691,14 @@
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPauseSongActionPerformed"/>
               </Events>
+            </Component>
+            <Component class="javax.swing.JLabel" name="lblSongTimestamp">
+              <Properties>
+                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="41" green="6" red="8" type="rgb"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="00:00.000"/>
+              </Properties>
             </Component>
           </SubComponents>
         </Container>
