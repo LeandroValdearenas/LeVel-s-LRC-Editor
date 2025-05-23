@@ -1,4 +1,4 @@
-package com.levels.lrceditor.model;
+package com.levels.lrceditor;
 
 import java.time.Duration;
 
@@ -38,22 +38,26 @@ public class Lyric {
     @Override
     public String toString() {
         // Two spaces for better visibility
-        return timestampToString(this.timestamp) + "  " + lyric;
+        return String.format("%s  %s", getBracketedTimestamp(), lyric);
     }
     
-    public String toLyricString() {
+    public String toLrcString() {
         // Only one space, line breaks
-        return '\n' + timestampToString(this.timestamp) + ' ' + lyric;
+        return String.format("\n%s %s", getBracketedTimestamp(), lyric);
+    }
+    
+    public String getBracketedTimestamp() {
+        if (timestamp == null) {
+            return "";
+        }
+        return String.format("[%02d:%02d.%03d]", timestamp.toMinutesPart(), timestamp.toSecondsPart(), timestamp.toMillisPart());
     }
 
     public void moveTimestamp(Duration offset, boolean addition) {
         this.timestamp = addition ? timestamp.plus(offset) : timestamp.minus(offset);
     }
-
-    public static String timestampToString(Duration timestamp) {
-        if (timestamp == null) {
-            return "";
-        }
-        return String.format("[%02d:%02d.%03d]", timestamp.toMinutesPart(), timestamp.toSecondsPart(), timestamp.toMillisPart());
+    
+    public static String timestampDecisecondsToString(Duration timestamp) {
+        return String.format("%02d:%02d.%d", timestamp.toMinutesPart(), timestamp.toSecondsPart(), timestamp.toMillisPart() / 100);
     }
 }
