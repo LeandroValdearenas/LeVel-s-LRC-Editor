@@ -59,6 +59,11 @@ public class Mp3Player extends PlaybackListener {
     public void setCurrentMillis(int currentMillis) {
         this.currentMillis = currentMillis;
     }
+    
+    // Whether or not a song has been selected
+    public boolean hasSelectedSong() {
+        return this.song.getAbsolutePath() != null;
+    }
 
     // Add Song Length, only if song length is null.
     public void addSongLength(String length) {

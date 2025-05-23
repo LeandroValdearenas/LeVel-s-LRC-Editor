@@ -1,5 +1,6 @@
 package com.levels.lrceditor;
 
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -196,6 +197,9 @@ public class LRCEditor extends javax.swing.JFrame {
         lstLyrics.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 lstLyricsKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                lstLyricsKeyReleased(evt);
             }
         });
         lstLyrics.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
@@ -530,34 +534,169 @@ public class LRCEditor extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    // OPEN LRC FILE (BUTTON)
+    // ACTION EVENTS:
+    // -> MENU BAR ITEMS
+    // ---> FILE
+
+    private void mniNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniNewActionPerformed
+        resetLrc();
+    }//GEN-LAST:event_mniNewActionPerformed
+
+    private void mniOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniOpenActionPerformed
+        openLrcFile();
+    }//GEN-LAST:event_mniOpenActionPerformed
+
+    private void mniSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniSaveActionPerformed
+        saveFile();
+    }//GEN-LAST:event_mniSaveActionPerformed
+
+    private void mniSaveAsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniSaveAsActionPerformed
+        try {
+            saveFileAs();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "An error occurred while saving file: " + e.getMessage());
+        }
+    }//GEN-LAST:event_mniSaveAsActionPerformed
+
+    // ---> SONG
+
+    private void mniOpenMp3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniOpenMp3ActionPerformed
+        openMp3File();
+    }//GEN-LAST:event_mniOpenMp3ActionPerformed
+
+    private void mniClearMp3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniClearMp3ActionPerformed
+        this.mp3Player.loadSong(null);
+        disableMp3Actions();
+    }//GEN-LAST:event_mniClearMp3ActionPerformed
+
+    private void mniPlayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniPlayActionPerformed
+        playSong();
+    }//GEN-LAST:event_mniPlayActionPerformed
+
+    private void mniPauseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniPauseActionPerformed
+        pauseSong();
+    }//GEN-LAST:event_mniPauseActionPerformed
+
+    private void mniStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniStopActionPerformed
+        this.mp3Player.endSong();
+    }//GEN-LAST:event_mniStopActionPerformed
+
+    // ---> TOOLS
+
+    private void mniTimestampsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniTimestampsActionPerformed
+        String value = JOptionPane.showInputDialog("Move all timestamps by an amount of time (+/-)");
+        try {
+            // Remove all brackets
+            value = trimBrackets(value);
+
+            // Get sign if provided
+            boolean addition = true;
+            char sign = value.charAt(0);
+            if (sign == '+' || sign == '-') {
+                // Remove sign from string
+                value = value.substring(1).strip();
+                addition = sign == '+';
+            }
+
+            // Get timestamp
+            Duration timestamp = stringToDuration(value);
+
+            // Check if any timestamp would be negative
+            if (!addition) {
+                for (int i = 0; i < lstModel.size(); i++) {
+                    Lyric lyric = lstModel.getElementAt(i);
+                    if (lyric.getTimestamp().compareTo(timestamp) < 0) {
+                        throw new NegativeTimestampException("Operation results in negative timestamp: "
+                                + lyric.getBracketedTimestamp() + " - ["
+                                + timestampToString(timestamp) + "] = ["
+                                + timestampToString(lyric.getTimestamp().minus(timestamp)) + "]");
+                    }
+                }
+            }
+
+            // Perform addition/substraction
+            for (int i = 0; i < lstModel.size(); i++) {
+                lstModel.getElementAt(i).moveTimestamp(timestamp, addition);
+            }
+
+            // Update lyrics list UI
+            this.lstLyrics.updateUI();
+
+        } catch (NegativeTimestampException e) {
+            JOptionPane.showMessageDialog(null, "Invalid substraction, make sure there are no timestamps smaller than the inserted value.\n" + e.getMessage());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Inserted value is invalid. Make sure it's a valid timestamp operation, like: +00:00.000");
+        }
+    }//GEN-LAST:event_mniTimestampsActionPerformed
+
+    // -> LRC BUTTONS
+
     private void btnOpenLrcFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpenLrcFileActionPerformed
         openLrcFile();
     }//GEN-LAST:event_btnOpenLrcFileActionPerformed
 
-    // CHANGE LYRIC SELECTION
+    private void btnSaveLRCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveLRCActionPerformed
+        saveFile();
+    }//GEN-LAST:event_btnSaveLRCActionPerformed
+
+    // -> TABS
+
+    private void tabMainStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tabMainStateChanged
+        switch (tabMain.getSelectedIndex()) {
+            case 0 ->
+                // Change to first tab
+                setTxaTextFromList();
+            case 1 ->
+                // Change to second tab
+                setListLyricsFromTxa();
+        }
+    }//GEN-LAST:event_tabMainStateChanged
+
+    // ---> EDIT LYRICS TAB
+
     private void lstLyricsValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lstLyricsValueChanged
         if (!evt.getValueIsAdjusting()) {
             selectLyric(this.lstLyrics.getSelectedValue());
         }
     }//GEN-LAST:event_lstLyricsValueChanged
 
-    // DELETE SELECTED LYRIC
-    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
-        try {
-            // Remove selected lyric
-            lstModel.removeElement(selectedLyric);
-            this.lstLyrics.clearSelection();
-            resetSaveButtons();
-
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Invalid timestamp. Try again. (" + e.getMessage() + ")");
-        } catch (ArrayIndexOutOfBoundsException e) {
-            JOptionPane.showMessageDialog(null, "The timestamp is invalid. Make sure it looks like the next example: [00:00.000]");
+    private void lstLyricsKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_lstLyricsKeyPressed
+        switch (evt.getKeyCode()) {
+            // Enter
+            case KeyEvent.VK_ENTER -> {
+                skipSongToSelectedLyric();
+            }
+            // Left key
+            case KeyEvent.VK_LEFT -> {
+                skipSongBack(5000);
+            }
+            // Right key
+            case KeyEvent.VK_RIGHT -> {
+                skipSongForward(5000);
+            }
+            // Spacebar
+            case KeyEvent.VK_SPACE -> {
+                setLyricTimestampFromSong();
+            }
+            // 'P' key
+            case KeyEvent.VK_P -> {
+                togglePause();
+            }
         }
-    }//GEN-LAST:event_btnDeleteActionPerformed
+    }//GEN-LAST:event_lstLyricsKeyPressed
 
-    // SAVE LINE (BUTTON)
+    private void lstLyricsKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_lstLyricsKeyReleased
+        switch (evt.getKeyCode()) {
+            // Enter, Left key, Right key
+            case KeyEvent.VK_ENTER, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_SPACE -> {
+                // If a song is selected and paused, resume it.
+                if (mp3Player.hasSelectedSong() && mp3Player.isPaused()) {
+                    playSong();
+                }
+            }
+        }
+    }//GEN-LAST:event_lstLyricsKeyReleased
+
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         try {
             Lyric savedLyric = new Lyric(stringToDuration(txtTimestamp.getText()), txtLyric.getText());
@@ -609,110 +748,39 @@ public class LRCEditor extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnSaveActionPerformed
 
-    // SAVE LRC FILE (BUTTON)
-    private void btnSaveLRCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveLRCActionPerformed
-        saveFile();
-    }//GEN-LAST:event_btnSaveLRCActionPerformed
-
-    // OPEN "CHANGE TIMESTAMPS" POPUP MENU (MENU ITEM)
-    private void mniTimestampsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniTimestampsActionPerformed
-        String value = JOptionPane.showInputDialog("Move all timestamps by an amount of time (+/-)");
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
         try {
-            // Remove all brackets
-            value = trimBrackets(value);
+            // Remove selected lyric
+            lstModel.removeElement(selectedLyric);
+            this.lstLyrics.clearSelection();
+            resetSaveButtons();
 
-            // Get sign if provided
-            boolean addition = true;
-            char sign = value.charAt(0);
-            if (sign == '+' || sign == '-') {
-                // Remove sign from string
-                value = value.substring(1).strip();
-                addition = sign == '+';
-            }
-
-            // Get timestamp
-            Duration timestamp = stringToDuration(value);
-
-            // Check if any timestamp would be negative
-            if (!addition) {
-                for (int i = 0; i < lstModel.size(); i++) {
-                    Lyric lyric = lstModel.getElementAt(i);
-                    if (lyric.getTimestamp().compareTo(timestamp) < 0) {
-                        throw new NegativeTimestampException("Operation results in negative timestamp: "
-                                + lyric.getBracketedTimestamp() + " - ["
-                                + timestampToString(timestamp) + "] = ["
-                                + timestampToString(lyric.getTimestamp().minus(timestamp)) + "]");
-                    }
-                }
-            }
-
-            // Perform addition/substraction
-            for (int i = 0; i < lstModel.size(); i++) {
-                lstModel.getElementAt(i).moveTimestamp(timestamp, addition);
-            }
-
-            // Update lyrics list UI
-            this.lstLyrics.updateUI();
-
-        } catch (NegativeTimestampException e) {
-            JOptionPane.showMessageDialog(null, "Invalid substraction, make sure there are no timestamps smaller than the inserted value.\n" + e.getMessage());
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Inserted value is invalid. Make sure it's a valid timestamp operation, like: +00:00.000");
+            JOptionPane.showMessageDialog(null, "Invalid timestamp. Try again. (" + e.getMessage() + ")");
+        } catch (ArrayIndexOutOfBoundsException e) {
+            JOptionPane.showMessageDialog(null, "The timestamp is invalid. Make sure it looks like the next example: [00:00.000]");
         }
-    }//GEN-LAST:event_mniTimestampsActionPerformed
+    }//GEN-LAST:event_btnDeleteActionPerformed
 
-    // SAVE LRC FILE (MENU ITEM)
-    private void mniSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniSaveActionPerformed
-        saveFile();
-    }//GEN-LAST:event_mniSaveActionPerformed
+    // -> MP3 PLAYER
 
-    // OPEN LRC FILE (MENU ITEM)
-    private void mniOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniOpenActionPerformed
-        openLrcFile();
-    }//GEN-LAST:event_mniOpenActionPerformed
-
-    // NEW FILE (MENU ITEM)
-    private void mniNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniNewActionPerformed
-        resetLrc();
-    }//GEN-LAST:event_mniNewActionPerformed
-
-    // SAVE FILE AS (MENU ITEM)
-    private void mniSaveAsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniSaveAsActionPerformed
-        try {
-            saveFileAs();
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "An error occurred while saving file: " + e.getMessage());
-        }
-    }//GEN-LAST:event_mniSaveAsActionPerformed
-
-    // CHANGE TABS
-    private void tabMainStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tabMainStateChanged
-        switch (tabMain.getSelectedIndex()) {
-            case 0 ->
-                // Change to first tab
-                setTxaTextFromList();
-            case 1 ->
-                // Change to second tab
-                setListLyricsFromTxa();
-        }
-    }//GEN-LAST:event_tabMainStateChanged
-
-    // OPEN MP3 FILE (BUTTON)
     private void btnOpenMp3FileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpenMp3FileActionPerformed
         openMp3File();
     }//GEN-LAST:event_btnOpenMp3FileActionPerformed
 
-    // PLAY SONG (BUTTON)
     private void btnPlaySongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPlaySongActionPerformed
         playSong();
     }//GEN-LAST:event_btnPlaySongActionPerformed
 
-    // PAUSE SONG (BUTTON)
     private void btnPauseSongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPauseSongActionPerformed
         pauseSong();
     }//GEN-LAST:event_btnPauseSongActionPerformed
 
-    // MOUSE RELEASE PLAYBACK SLIDER
+    private void sldPlaybackMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sldPlaybackMousePressed
+        this.mp3Player.pauseSong();
+        enablePlay();
+    }//GEN-LAST:event_sldPlaybackMousePressed
+
     private void sldPlaybackMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sldPlaybackMouseReleased
         // Get requested frame
         JSlider source = (JSlider) evt.getSource();
@@ -722,75 +790,27 @@ public class LRCEditor extends javax.swing.JFrame {
         setSongPosition(millis, frame);
     }//GEN-LAST:event_sldPlaybackMouseReleased
 
-    // CLEAR MP3 (SHORTCUT)
-    private void mniClearMp3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniClearMp3ActionPerformed
-        this.mp3Player.loadSong(null);
-        disableMp3Actions();
-    }//GEN-LAST:event_mniClearMp3ActionPerformed
-
-    // OPEN MP3 (SHORTCUT)
-    private void mniOpenMp3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniOpenMp3ActionPerformed
-        openMp3File();
-    }//GEN-LAST:event_mniOpenMp3ActionPerformed
-
-    // PLAY MP3 (SHORTCUT)
-    private void mniPlayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniPlayActionPerformed
-        playSong();
-    }//GEN-LAST:event_mniPlayActionPerformed
-
-    // PAUSE MP3 (SHORTCUT)
-    private void mniPauseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniPauseActionPerformed
-        pauseSong();
-    }//GEN-LAST:event_mniPauseActionPerformed
-
-    // END SONG (SHORTCUT)
-    private void mniStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniStopActionPerformed
-        this.mp3Player.endSong();
-    }//GEN-LAST:event_mniStopActionPerformed
-
-    // KEY PRESSED ON LYRICS LIST
-    private void lstLyricsKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_lstLyricsKeyPressed
-        switch (evt.getKeyCode()) {
-            // Spacebar
-            case 32 -> {
-                setLyricTimestampFromSong();
-            }
-            // Enter
-            case 10 -> {
-                skipSongToSelectedLyric();
-            }
-            // Left key
-            case 37 -> {
-                skipSongBack(5000);
-            }
-            // Right key
-            case 39 -> {
-                skipSongForward(5000);
-            }
-        }
-    }//GEN-LAST:event_lstLyricsKeyPressed
-
-    // KEY PRESSED ON PLAYBACK SLIDER
     private void sldPlaybackKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_sldPlaybackKeyPressed
         switch (evt.getKeyCode()) {
             // Left key
-            case 37 -> {
+            case KeyEvent.VK_LEFT -> {
                 skipSongBack(5000);
             }
             // Right key
-            case 39 -> {
+            case KeyEvent.VK_RIGHT -> {
                 skipSongForward(5000);
+            }
+            // 'P' key
+            case KeyEvent.VK_P -> {
+                togglePause();
             }
         }
     }//GEN-LAST:event_sldPlaybackKeyPressed
 
-    // MOUSE PRESSED PLAYBACK SLIDER
-    private void sldPlaybackMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sldPlaybackMousePressed
-        this.mp3Player.pauseSong();
-        enablePlay();
-    }//GEN-LAST:event_sldPlaybackMousePressed
-
-    // Select and play MP3 file
+    // FUNCTIONS:
+    /**
+     * Select and play MP3 file
+     */
     private void openMp3File() {
         try {
             this.fchOpen.setDialogTitle("Select MP3 file");
@@ -799,8 +819,8 @@ public class LRCEditor extends javax.swing.JFrame {
             this.lblSongLength.setText(this.mp3Player.getSong().getLength());
 
         } catch (TaskCancelledException e) {
-            // If a song was being played, re-enable mp3 player buttons
-            if (this.mp3Player.getSong().getAbsolutePath() != null) {
+            // If a song has been selected, re-enable mp3 player buttons
+            if (mp3Player.hasSelectedSong()) {
                 enablePlay();
             }
         } catch (Exception e) {
@@ -808,7 +828,9 @@ public class LRCEditor extends javax.swing.JFrame {
         }
     }
 
-    // Select and read LRC file
+    /**
+     * Select and read LRC file
+     */
     private void openLrcFile() {
         try {
             this.fchOpen.setDialogTitle("Select LRC file");
@@ -829,7 +851,9 @@ public class LRCEditor extends javax.swing.JFrame {
         }
     }
 
-    // Select file and return its absolute path
+    /**
+     * Select file and return its absolute path
+     */
     private String selectFile() throws IOException, TaskCancelledException {
         int returnVal = fchOpen.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -842,7 +866,9 @@ public class LRCEditor extends javax.swing.JFrame {
         }
     }
 
-    // Read LRC file and extract lyrics from it
+    /**
+     * Read LRC file and extract lyrics from it
+     */
     private void readLrcFile(String path) throws FileNotFoundException {
         File myObj = new File(path);
         try (Scanner myReader = new Scanner(myObj)) {
@@ -869,7 +895,9 @@ public class LRCEditor extends javax.swing.JFrame {
         }
     }
 
-    // Reset file path, lyrics, tabs, text areas, selected lyric, buttons.
+    /**
+     * Reset file path, lyrics, tabs, text areas, selected lyric, buttons.
+     */
     private void resetLrc() {
         this.lrcPath = null;
         this.lstModel.clear();
@@ -879,7 +907,9 @@ public class LRCEditor extends javax.swing.JFrame {
         resetSaveButtons();
     }
 
-    // Save file
+    /**
+     * Save file
+     */
     private void saveFile() {
         try {
             // If lrcPath is null, save as new file
@@ -917,7 +947,9 @@ public class LRCEditor extends javax.swing.JFrame {
         }
     }
 
-    // Save file as...
+    /**
+     * Save file as...
+     */
     private void saveFileAs() throws IOException {
         int option = fchSave.showSaveDialog(null);
         if (option == JFileChooser.APPROVE_OPTION) {
@@ -933,7 +965,9 @@ public class LRCEditor extends javax.swing.JFrame {
         }
     }
 
-    // Save information to file
+    /**
+     * Save information to file
+     */
     private void saveToFile(String path) throws IOException {
         String length = this.mp3Player.getSong().getLength();
 
@@ -953,7 +987,9 @@ public class LRCEditor extends javax.swing.JFrame {
         }
     }
 
-    // Select lyric and reset Text Inputs and Delete Button
+    /**
+     * Select lyric and reset Text Inputs and Delete Button
+     */
     private void selectLyric(Lyric lyric) {
         // If lyric is null, create new lyric
         if (lyric == null) {
@@ -967,7 +1003,9 @@ public class LRCEditor extends javax.swing.JFrame {
         this.btnDelete.setEnabled(lyric.getTimestamp() != null);
     }
 
-    // Enable/disable save buttons and other operations
+    /**
+     * Enable/disable save buttons and other operations
+     */
     private void resetSaveButtons() {
         // Enable if list has items, otherwise disable
         boolean enabled = !lstModel.isEmpty();
@@ -989,7 +1027,26 @@ public class LRCEditor extends javax.swing.JFrame {
         this.mniTimestamps.setEnabled(enabled);
     }
 
-    // Play song and enable pause button
+    /**
+     * Toggle play/pause
+     */
+    private void togglePause() {
+        // If no song has been selected, return
+        if (!mp3Player.hasSelectedSong()) {
+            return;
+        }
+
+        // If song is paused, resume. Otherwise, pause.
+        if (mp3Player.isPaused()) {
+            playSong();
+        } else {
+            pauseSong();
+        }
+    }
+
+    /**
+     * Play song and enable pause button
+     */
     private void playSong() {
         this.mp3Player.playSong();
 
@@ -997,7 +1054,9 @@ public class LRCEditor extends javax.swing.JFrame {
         enablePause();
     }
 
-    // Pause song and enable play button
+    /**
+     * Pause song and enable play button
+     */
     private void pauseSong() {
         this.mp3Player.pauseSong();
 
@@ -1005,7 +1064,9 @@ public class LRCEditor extends javax.swing.JFrame {
         enablePlay();
     }
 
-    // Set selected lyric's timestamp from current song
+    /**
+     * Set selected lyric's timestamp from current song
+     */
     private void setLyricTimestampFromSong() {
         var selectedIndex = lstLyrics.getSelectedIndex();
 
@@ -1024,13 +1085,20 @@ public class LRCEditor extends javax.swing.JFrame {
                 resetSaveButtons();
             }
 
-            if (selectedIndex + 1 >= lstModel.size()) {
+            // If there is a next lyric
+            if (selectedIndex + 1 < lstModel.size()) {
+                // Make sure the next 2 items are visible
+                lstLyrics.ensureIndexIsVisible(selectedIndex + 2);
+            } else {
+                // Clear selection
                 lstLyrics.clearSelection();
             }
         }
     }
 
-    // Skip song to selected lyric's timestamp
+    /**
+     * Skip song to selected lyric's timestamp
+     */
     private void skipSongToSelectedLyric() {
         var selectedIndex = lstLyrics.getSelectedIndex();
 
@@ -1047,7 +1115,9 @@ public class LRCEditor extends javax.swing.JFrame {
         }
     }
 
-    // Skip song back
+    /**
+     * Skip song back
+     */
     private void skipSongBack(int skip) {
         var millis = this.mp3Player.getCurrentMillis();
 
@@ -1065,7 +1135,9 @@ public class LRCEditor extends javax.swing.JFrame {
         setSongPosition(millis, frame);
     }
 
-    // Skip song forward
+    /**
+     * Skip song forward
+     */
     private void skipSongForward(int skip) {
         var millis = this.mp3Player.getCurrentMillis();
 
@@ -1086,13 +1158,15 @@ public class LRCEditor extends javax.swing.JFrame {
         setSongPosition(millis, frame);
     }
 
-    // Set song position
+    /**
+     * Set song position
+     */
     private void setSongPosition(int millis, int frame) {
         if (!this.mp3Player.isPaused()) {
             this.mp3Player.pauseSong();
             enablePlay();
         }
-        
+
         // Update timestamp and slider UI
         setLblSongTimestampValue(millis);
         setSldPlaybackValue(frame);
@@ -1102,7 +1176,9 @@ public class LRCEditor extends javax.swing.JFrame {
         this.mp3Player.setCurrentFrame(frame);
     }
 
-    // Set text area text from lstModel values
+    /**
+     * Set text area text from lstModel values
+     */
     private void setTxaTextFromList() {
         // Reset text area
         txaLyrics.setText("");
@@ -1114,7 +1190,9 @@ public class LRCEditor extends javax.swing.JFrame {
         }
     }
 
-    // Set lstModel values from text area
+    /**
+     * Set lstModel values from text area
+     */
     private void setListLyricsFromTxa() {
         // Get text from text area
         String text = txaLyrics.getText();
@@ -1162,7 +1240,9 @@ public class LRCEditor extends javax.swing.JFrame {
         selectLyric(null);
     }
 
-    // Convert String to Lyric
+    /**
+     * Convert String to Lyric
+     */
     private Lyric stringToLyric(String fullLyric) throws NumberFormatException {
         // Get timestamp without brackets
         Duration timestamp = stringToDuration(fullLyric.split("\\]", 2)[0]);
@@ -1173,7 +1253,9 @@ public class LRCEditor extends javax.swing.JFrame {
         return new Lyric(timestamp, lyric);
     }
 
-    // Convert String to Duration
+    /**
+     * Convert String to Duration
+     */
     private Duration stringToDuration(String string) throws NumberFormatException {
         String[] fullTime = trimBrackets(string).split("[:.]");
         Duration timestamp = Duration
@@ -1184,7 +1266,12 @@ public class LRCEditor extends javax.swing.JFrame {
         return timestamp;
     }
 
-    // Convert Timestamp to String
+    /**
+     * Convert Timestamp to String
+     *
+     * @param timestamp Timestamp to convert
+     * @return Timestamp as a string, formatted as 00:00.000
+     */
     public String timestampToString(Duration timestamp) {
         if (timestamp == null) {
             return "";
@@ -1192,35 +1279,53 @@ public class LRCEditor extends javax.swing.JFrame {
         return String.format("%02d:%02d.%03d", timestamp.toMinutesPart(), timestamp.toSecondsPart(), timestamp.toMillisPart());
     }
 
-    // Trim brackets
+    /**
+     * Trim brackets
+     */
     private String trimBrackets(String string) {
         return string.replaceAll("[\\[\\]]", "");
     }
 
-    // Set playback slider's max size
+    /**
+     * Set playback slider's max size
+     *
+     * @param maximum Maximum size
+     */
     public void setSldPlaybackMaximum(int maximum) {
         this.sldPlayback.setMaximum(maximum);
     }
 
-    // Set playback slider's position
+    /**
+     * Set playback slider's position
+     *
+     * @param value Playback's position (frame)
+     */
     public void setSldPlaybackValue(int value) {
         this.sldPlayback.setValue(value);
     }
 
-    // Set song timestamp value
+    /**
+     * Set song timestamp value
+     *
+     * @param millis Milliseconds to display as a timestamp
+     */
     public void setLblSongTimestampValue(int millis) {
         var timestamp = Duration.ofMillis(millis);
         this.lblSongTimestamp.setText(Lyric.timestampDecisecondsToString(timestamp));
     }
 
-    // Enable mp3 actions and slider (pause remains disabled)
+    /**
+     * Enable mp3 actions and slider (pause remains disabled)
+     */
     public void enableMp3Player() {
         this.sldPlayback.setEnabled(true);
         this.mniClearMp3.setEnabled(true);
         enablePlay();
     }
 
-    // Enable play buttons, disable pause buttons
+    /**
+     * Enable play buttons, disable pause buttons
+     */
     public void enablePlay() {
         this.btnPlaySong.setEnabled(true);
         this.mniPlay.setEnabled(true);
@@ -1229,7 +1334,9 @@ public class LRCEditor extends javax.swing.JFrame {
         this.mniStop.setEnabled(false);
     }
 
-    // Disable play buttons, enable pause buttons
+    /**
+     * Disable play buttons, enable pause buttons
+     */
     public void enablePause() {
         this.btnPlaySong.setEnabled(false);
         this.mniPlay.setEnabled(false);
@@ -1238,7 +1345,9 @@ public class LRCEditor extends javax.swing.JFrame {
         this.mniStop.setEnabled(true);
     }
 
-    // Disable all mp3 player buttons and slider
+    /**
+     * Disable all mp3 player buttons and slider
+     */
     private void disableMp3Actions() {
         this.btnPlaySong.setEnabled(false);
         this.btnPauseSong.setEnabled(false);

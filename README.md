@@ -3,9 +3,13 @@
 
 A simple java + swing application to create and edit .lrc files.
 
-At the moment you can create and edit .lrc files, and you can listen to .mp3 files in a (very simple) mp3 player.
-Future plans include being able to set timestamps in real time with the mp3 player, as well as improved keyboard control.
-The menu bar will also get some extra functionalities as I see fit, we’ll see how it goes.
+# Features
+
+-Create and edit .lrc files.
+-Insert the lyrics as plain text in the "Add Lyrics" tab, and add timestamps in the "Edit Lyrics" tab.
+-Listen to songs through a (rather simple) mp3 player.
+-Set timestamps in real time (by selecting a lyric in the "Edit Lyrics" tab and pressing the Space Bar while the song is playing).
+-Adjust all timestamps by a specified amount of time by pressing "CTRL + T".
 
 Made for personal use in my free time, feel free to try it! (Just don’t expect anything *too* fancy.)
 
