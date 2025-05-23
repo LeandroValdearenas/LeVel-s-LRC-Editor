@@ -48,10 +48,10 @@ public class Song {
         var mp3File = new Mp3File(absolutePath);
         this.frameCount = mp3File.getFrameCount();
         this.frameRatePerMillis = (double) mp3File.getFrameCount() / mp3File.getLengthInMilliseconds();
-        this.length = String.format("%02d:%02d.%03d",
+        this.length = String.format("%02d:%02d.%d",
                 mp3File.getLengthInSeconds() / 60,
                 mp3File.getLengthInSeconds() % 60,
-                mp3File.getLengthInMilliseconds() % 1000);
+                mp3File.getLengthInMilliseconds() % 1000 / 100);
     }
 
 }

@@ -3,6 +3,10 @@ package com.levels.lrceditor;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.advanced.AdvancedPlayer;
 import javazoom.jl.player.advanced.PlaybackEvent;
@@ -36,6 +40,10 @@ public class Mp3Player extends PlaybackListener {
         this.lrcEditor = lrcEditor;
     }
 
+    public boolean isPaused() {
+        return isPaused;
+    }
+    
     public Song getSong() {
         return song;
     }
@@ -44,6 +52,10 @@ public class Mp3Player extends PlaybackListener {
         this.currentFrame = currentFrame;
     }
 
+    public int getCurrentMillis() {
+        return currentMillis;
+    }
+    
     public void setCurrentMillis(int currentMillis) {
         this.currentMillis = currentMillis;
     }
@@ -60,7 +72,7 @@ public class Mp3Player extends PlaybackListener {
         if (!hasFinished) {
             pauseSong();
         }
-        
+
         // Set song
         this.song = song;
 
@@ -93,14 +105,14 @@ public class Mp3Player extends PlaybackListener {
                 // Instance advanced player
                 advancedPlayer = new AdvancedPlayer(bis);
                 advancedPlayer.setPlayBackListener(this);
-                
+
                 hasFinished = false;
-                
+
                 startMusicThread();
                 startSongSliderThread();
 
             } catch (FileNotFoundException | JavaLayerException e) {
-                System.out.println("An error has occurred while trying to play song: " + e.getMessage());
+                Logger.getLogger(Mp3Player.class.getName()).log(Level.INFO, "An error has occurred while trying to play song: {0}", e.getMessage());
             }
         }
     }
@@ -109,7 +121,7 @@ public class Mp3Player extends PlaybackListener {
         pauseSong();
         resetValues();
     }
-    
+
     private void resetValues() {
         isPaused = false;
         hasFinished = true;
@@ -128,50 +140,50 @@ public class Mp3Player extends PlaybackListener {
                         isPaused = false;
                         threadSync.notify();
                     }
-                    
+
                     // Resume last played
                     advancedPlayer.play(currentFrame, Integer.MAX_VALUE);
                 } else {
                     // Play from beginning
                     advancedPlayer.play();
                 }
-                
+
             } catch (JavaLayerException e) {
-                System.out.println("An error has occurred while trying to play music file: " + e.getMessage());
+                Logger.getLogger(Mp3Player.class.getName()).log(Level.INFO, "An error has occurred while trying to play music file: {0}", e.getMessage());
             }
         }).start();
     }
 
     // START SONG SLIDER THREAD
     private void startSongSliderThread() {
-        new Thread(() -> {
-            if (isPaused) {
-                try {
-                    synchronized (threadSync) {
-                        threadSync.wait();
-                    }
-
-                } catch (InterruptedException e) {
-                    System.out.println("An error has occurred while trying to set up song slider: " + e.getMessage());
+        if (isPaused) {
+            try {
+                synchronized (threadSync) {
+                    threadSync.wait();
                 }
+
+            } catch (InterruptedException e) {
+                Logger.getLogger(Mp3Player.class.getName()).log(Level.INFO, "An error has occurred while trying to set up song slider: {0}", e.getMessage());
             }
+        }
 
-            while (!isPaused && !hasFinished) {
-                try {
-                    lrcEditor.setLblSongTimestampValue((int) (++currentMillis * 2.08));
-                    var calculatedFrame = (int) (currentMillis * 2.08 * song.getFrameRatePerMillis());
-
-                    // Update slider UI
-                    lrcEditor.setSldPlaybackValue(calculatedFrame);
-
-                    // Move forward by 1 millisecond (intentional Thread.sleep in loop)
-                    Thread.sleep(1);
-
-                } catch (InterruptedException e) {
-                    System.out.println("An error has occurred while trying to set up song slider: " + e.getMessage());
-                }
+        ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(10);
+        executor.scheduleAtFixedRate(() -> {
+            if (isPaused || hasFinished) {
+                executor.shutdown();
+                return;
             }
-        }).start();
+            
+            currentMillis += 50;
+            
+            // Update current timestamp  UI
+            lrcEditor.setLblSongTimestampValue(currentMillis);
+            
+            var calculatedFrame = (int) (currentMillis * song.getFrameRatePerMillis());
+
+            // Update slider UI
+            lrcEditor.setSldPlaybackValue(calculatedFrame);
+        }, 50, 50, TimeUnit.MILLISECONDS);
     }
 
     @Override

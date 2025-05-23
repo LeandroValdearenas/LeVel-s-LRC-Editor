@@ -5,10 +5,10 @@
     <Component class="javax.swing.JFileChooser" name="fchOpen">
       <Properties>
         <Property name="background" type="java.awt.Color" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection component="pnl1" name="background" type="property"/>
+          <Connection component="pnlMain" name="background" type="property"/>
         </Property>
         <Property name="currentDirectory" type="java.io.File" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="new File(defaultPath)" type="code"/>
+          <Connection code="new File(&quot;&quot;)" type="code"/>
         </Property>
       </Properties>
     </Component>
@@ -16,10 +16,10 @@
       <Properties>
         <Property name="dialogType" type="int" value="1"/>
         <Property name="background" type="java.awt.Color" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection component="pnl1" name="background" type="property"/>
+          <Connection component="pnlMain" name="background" type="property"/>
         </Property>
         <Property name="currentDirectory" type="java.io.File" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="new File(defaultPath)" type="code"/>
+          <Connection code="new File(&quot;&quot;)" type="code"/>
         </Property>
         <Property name="dialogTitle" type="java.lang.String" value="Save your LRC file as"/>
         <Property name="fileFilter" type="javax.swing.filechooser.FileFilter" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
@@ -179,12 +179,6 @@
             </MenuItem>
           </SubComponents>
         </Menu>
-        <Menu class="javax.swing.JMenu" name="mnuPreferences">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Preferences"/>
-            <Property name="enabled" type="boolean" value="false"/>
-          </Properties>
-        </Menu>
       </SubComponents>
     </Menu>
   </NonVisualComponents>
@@ -211,17 +205,17 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="pnl1" alignment="0" max="32767" attributes="0"/>
+          <Component id="pnlMain" alignment="0" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="pnl1" alignment="0" max="32767" attributes="0"/>
+          <Component id="pnlMain" alignment="0" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Container class="javax.swing.JPanel" name="pnl1">
+    <Container class="javax.swing.JPanel" name="pnlMain">
       <Properties>
         <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
           <Color blue="ff" green="c0" red="85" type="rgb"/>
@@ -239,7 +233,7 @@
               <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="lblTitle" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="193" max="32767" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
                   <Component id="btnOpenLrcFile" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="btnSaveLRC" min="-2" max="-2" attributes="0"/>
@@ -247,7 +241,7 @@
               </Group>
               <Component id="pnlSong" alignment="1" max="32767" attributes="0"/>
               <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
-                  <Component id="tab1" alignment="0" max="32767" attributes="0"/>
+                  <Component id="tabMain" alignment="0" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -266,7 +260,7 @@
               <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
-                      <Component id="tab1" max="32767" attributes="0"/>
+                      <Component id="tabMain" max="32767" attributes="0"/>
                       <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -313,10 +307,10 @@
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnSaveLRCActionPerformed"/>
           </Events>
         </Component>
-        <Container class="javax.swing.JTabbedPane" name="tab1">
+        <Container class="javax.swing.JTabbedPane" name="tabMain">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-              <Connection component="pnl1" name="background" type="property"/>
+              <Connection component="pnlMain" name="background" type="property"/>
             </Property>
             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
               <Connection component="lblTitle" name="foreground" type="property"/>
@@ -326,7 +320,7 @@
             <Property name="AccessibleContext.accessibleName" type="java.lang.String" value="tab1"/>
           </AccessibilityProperties>
           <Events>
-            <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="tab1StateChanged"/>
+            <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="tabMainStateChanged"/>
           </Events>
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
@@ -351,7 +345,7 @@
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="scrTxaLyrics" alignment="1" pref="682" max="32767" attributes="0"/>
+                              <Component id="scrTxaLyrics" alignment="1" pref="690" max="32767" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="lblSetLyrics" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
@@ -439,7 +433,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="txtTimestamp" min="-2" pref="110" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="txtLyric" pref="410" max="32767" attributes="0"/>
+                          <Component id="txtLyric" pref="418" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="btnSave" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
@@ -449,7 +443,7 @@
                       <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="scrLyrics" pref="682" max="32767" attributes="0"/>
+                              <Component id="scrLyrics" pref="690" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -507,11 +501,12 @@
                           <Color blue="f3" green="d9" red="ff" type="rgb"/>
                         </Property>
                         <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                          <Connection code="listModel" type="code"/>
+                          <Connection code="lstModel" type="code"/>
                         </Property>
                         <Property name="selectionMode" type="int" value="0"/>
                       </Properties>
                       <Events>
+                        <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="lstLyricsKeyPressed"/>
                         <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="lstLyricsValueChanged"/>
                       </Events>
                       <AuxValues>
@@ -580,27 +575,27 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="btnOpenMp3File" min="-2" pref="113" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
                       <Component id="btnPlaySong" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="btnPauseSong" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
                       <Component id="lblSongTimestamp" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="sldPlayback" max="32767" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
+                      <Component id="sldPlayback" pref="379" max="32767" attributes="0"/>
+                      <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
                       <Component id="lblSongLength" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="1" attributes="0">
                           <Component id="btnPauseSong" min="-2" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
@@ -633,6 +628,7 @@
               <Events>
                 <EventHandler event="mousePressed" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="sldPlaybackMousePressed"/>
                 <EventHandler event="mouseReleased" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="sldPlaybackMouseReleased"/>
+                <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="sldPlaybackKeyPressed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="lblSongLength">
@@ -640,7 +636,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="41" green="6" red="8" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="00:00.000"/>
+                <Property name="text" type="java.lang.String" value="00:00.0"/>
               </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="btnOpenMp3File">
@@ -697,7 +693,7 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="41" green="6" red="8" type="rgb"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="00:00.000"/>
+                <Property name="text" type="java.lang.String" value="00:00.0"/>
               </Properties>
             </Component>
           </SubComponents>
