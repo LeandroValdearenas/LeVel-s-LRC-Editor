@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JSlider;
@@ -111,6 +112,7 @@ public class LRCEditor extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle(lrcPath);
+        setIconImage(new ImageIcon(getClass().getResource("/images/icon.png")).getImage());
 
         pnlMain.setBackground(new java.awt.Color(133, 192, 255));
         pnlMain.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
