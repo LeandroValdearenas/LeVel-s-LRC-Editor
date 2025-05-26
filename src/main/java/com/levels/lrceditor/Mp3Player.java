@@ -125,6 +125,7 @@ public class Mp3Player extends PlaybackListener {
     public void endSong() {
         pauseSong();
         resetValues();
+        lrcEditor.setLblSongTimestampValue(0);
     }
 
     private void resetValues() {

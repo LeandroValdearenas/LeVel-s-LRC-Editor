@@ -1,29 +1,27 @@
 package com.levels.lrceditor;
 
-import java.time.Duration;
-
 /**
  *
  * @author Leandro Valdearenas
  */
 public class Lyric {
 
-    private Duration timestamp;
+    private Timestamp timestamp;
     private String lyric;
 
     public Lyric() {
     }
 
-    public Lyric(Duration timestamp, String lyric) {
+    public Lyric(Timestamp timestamp, String lyric) {
         this.timestamp = timestamp;
         this.lyric = lyric;
     }
-    
-    public Duration getTimestamp() {
+
+    public Timestamp getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Duration timestamp) {
+    public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -34,30 +32,27 @@ public class Lyric {
     public void setLyric(String lyric) {
         this.lyric = lyric;
     }
+    
+    public String getTimestampString() {
+        // If timestamp is null, return empty space
+        if (timestamp == null) {
+            return "";
+        }
+        return timestamp.toString();
+    }
 
     @Override
     public String toString() {
         // Two spaces for better visibility
-        return String.format("%s  %s", getBracketedTimestamp(), lyric);
-    }
-    
-    public String toLrcString() {
-        // Only one space, line breaks
-        return String.format("\n%s %s", getBracketedTimestamp(), lyric);
-    }
-    
-    public String getBracketedTimestamp() {
-        if (timestamp == null) {
-            return "";
-        }
-        return String.format("[%02d:%02d.%03d]", timestamp.toMinutesPart(), timestamp.toSecondsPart(), timestamp.toMillisPart());
+        return String.format("%s  %s", getTimestampString(), lyric);
     }
 
-    public void moveTimestamp(Duration offset, boolean addition) {
-        this.timestamp = addition ? timestamp.plus(offset) : timestamp.minus(offset);
+    public String toLrcString() {
+        // Only one space, line breaks
+        return String.format("\n%s %s", getTimestampString(), lyric);
     }
-    
-    public static String timestampDecisecondsToString(Duration timestamp) {
-        return String.format("%02d:%02d.%d", timestamp.toMinutesPart(), timestamp.toSecondsPart(), timestamp.toMillisPart() / 100);
+
+    public void moveTimestamp(Timestamp offset, boolean addition) {
+        this.timestamp = addition ? timestamp.plus(offset) : timestamp.minus(offset);
     }
 }

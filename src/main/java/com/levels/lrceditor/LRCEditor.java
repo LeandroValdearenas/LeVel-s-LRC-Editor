@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -99,6 +98,7 @@ public class LRCEditor extends javax.swing.JFrame {
         mniStop = new javax.swing.JMenuItem();
         mnuTools = new javax.swing.JMenu();
         mniTimestamps = new javax.swing.JMenuItem();
+        mniSort = new javax.swing.JMenuItem();
 
         fchOpen.setBackground(pnlMain.getBackground());
         fchOpen.setCurrentDirectory(new File(""));
@@ -521,6 +521,17 @@ public class LRCEditor extends javax.swing.JFrame {
         });
         mnuTools.add(mniTimestamps);
 
+        mniSort.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        mniSort.setText("Sort Lyrics");
+        mniSort.setToolTipText("Sort lyrics by their timestamps");
+        mniSort.setEnabled(false);
+        mniSort.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mniSortActionPerformed(evt);
+            }
+        });
+        mnuTools.add(mniSort);
+
         mnuBar.add(mnuTools);
 
         setJMenuBar(mnuBar);
@@ -592,6 +603,10 @@ public class LRCEditor extends javax.swing.JFrame {
         changeAllTimestamps();
     }//GEN-LAST:event_mniTimestampsActionPerformed
 
+    private void mniSortActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniSortActionPerformed
+        sortLyrics();
+    }//GEN-LAST:event_mniSortActionPerformed
+
     // -> LRC BUTTONS
 
     private void btnOpenLrcFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpenLrcFileActionPerformed
@@ -608,10 +623,10 @@ public class LRCEditor extends javax.swing.JFrame {
         switch (tabMain.getSelectedIndex()) {
             case 0 ->
                 // Change to first tab
-                setTxaTextFromList();
+                setTxaTextFromModel();
             case 1 ->
                 // Change to second tab
-                setListLyricsFromTxa();
+                setModelLyricsFromTxa();
         }
     }//GEN-LAST:event_tabMainStateChanged
 
@@ -677,10 +692,10 @@ public class LRCEditor extends javax.swing.JFrame {
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
         try {
-            var savedLyric = new Lyric(stringToDuration(txtTimestamp.getText()), txtLyric.getText());
+            var savedLyric = new Lyric(stringToTimestamp(txtTimestamp.getText()), txtLyric.getText());
             var selectedIndex = lstLyrics.getSelectedIndex();
             if (!lstModel.isEmpty()) {
-                // Loop through lstModel's lyrics
+                // Loop through model's lyrics
                 for (int i = 0; i < lstModel.size(); i++) {
                     Lyric lyric = lstModel.getElementAt(i);
 
@@ -850,7 +865,7 @@ public class LRCEditor extends javax.swing.JFrame {
      * Read LRC file and extract lyrics from it
      */
     private void readLrcFile(String path) throws FileNotFoundException {
-        List<Lyric> lyricsList = new ArrayList();
+        List<Lyric> lyrics = new ArrayList();
         File myObj = new File(path);
         try (Scanner myReader = new Scanner(myObj)) {
             while (myReader.hasNextLine()) {
@@ -864,7 +879,7 @@ public class LRCEditor extends javax.swing.JFrame {
                 // Only add item to list if it's a timestamp
                 if (Character.isDigit(data.charAt(1))) {
                     Lyric lyric = stringToLyric(data);
-                    lyricsList.add(lyric);
+                    lyrics.add(lyric);
                     continue;
                 }
 
@@ -876,10 +891,10 @@ public class LRCEditor extends javax.swing.JFrame {
         }
 
         // Sort lyrics by timestamps
-        lyricsList.sort((var a, var b) -> a.getTimestamp().compareTo(b.getTimestamp()));
+        lyrics.sort((var a, var b) -> a.getTimestamp().compareTo(b.getTimestamp()));
 
-        // Add list to lstModel
-        lstModel.addAll(lyricsList);
+        // Add list to model
+        lstModel.addAll(lyrics);
     }
 
     /**
@@ -958,9 +973,15 @@ public class LRCEditor extends javax.swing.JFrame {
     private void saveToFile(String path) throws IOException {
         String length = this.mp3Player.getSong().getLength();
 
+        // If length is null, use last lyric's timestamp
         if (length == null) {
-            // If length is null, use last lyric's timestamp
-            length = timestampToString(lstModel.lastElement().getTimestamp());
+            var timestamp = lstModel.lastElement().getTimestamp();
+            if (timestamp == null) {
+                throw new IOException("Last lyric in list is missing a timestamp.");
+            }
+
+            // Set last lyric's timestamp as song length
+            length = timestamp.toLongString();
         }
 
         try (FileWriter myWriter = new FileWriter(path)) {
@@ -972,6 +993,9 @@ public class LRCEditor extends javax.swing.JFrame {
                 myWriter.write(this.lstModel.elementAt(i).toLrcString());
             }
         }
+
+        // Update frame's title
+        setTitle(lrcPath);
     }
 
     /**
@@ -987,7 +1011,7 @@ public class LRCEditor extends javax.swing.JFrame {
 
         // Reset fields
         this.selectedLyric = lyric;
-        this.txtTimestamp.setText(this.selectedLyric.getBracketedTimestamp());
+        this.txtTimestamp.setText(this.selectedLyric.getTimestampString());
         this.txtLyric.setText(this.selectedLyric.getLyric());
         this.btnDelete.setEnabled(!isLyricNull);
     }
@@ -1006,7 +1030,7 @@ public class LRCEditor extends javax.swing.JFrame {
      * Enable/disable save buttons and other operations
      */
     private void resetSaveButtons() {
-        // Enable if list has items, otherwise disable
+        // Enable if model has items, otherwise disable
         boolean enabled = !lstModel.isEmpty();
 
         // Disable if any timestamp is null
@@ -1024,6 +1048,7 @@ public class LRCEditor extends javax.swing.JFrame {
         this.mniSave.setEnabled(enabled);
         this.mniSaveAs.setEnabled(enabled);
         this.mniTimestamps.setEnabled(enabled);
+        this.mniSort.setEnabled(enabled);
     }
 
     /**
@@ -1072,7 +1097,7 @@ public class LRCEditor extends javax.swing.JFrame {
         // If lyric is selected
         if (lstLyrics.getSelectedIndex() != -1) {
             // Get current timestamp
-            var timestamp = Duration.ofMillis(this.mp3Player.getCurrentMillis());
+            var timestamp = new Timestamp(this.mp3Player.getCurrentMillis());
 
             var wasEmpty = lstModel.get(selectedIndex).getTimestamp() == null;
 
@@ -1180,9 +1205,9 @@ public class LRCEditor extends javax.swing.JFrame {
     }
 
     /**
-     * Set text area text from lstModel values
+     * Set text area text from model's lyrics
      */
-    private void setTxaTextFromList() {
+    private void setTxaTextFromModel() {
         // Reset text area
         txaLyrics.setText("");
 
@@ -1194,13 +1219,13 @@ public class LRCEditor extends javax.swing.JFrame {
     }
 
     /**
-     * Set lstModel values from text area
+     * Set model's lyrics from text area
      */
-    private void setListLyricsFromTxa() {
+    private void setModelLyricsFromTxa() {
         // Get text from text area
         String text = txaLyrics.getText();
 
-        // In case last line is empty, add it to lstModel as line break
+        // In case last line is empty, add it to model as line break
         if (!text.isBlank() && text.endsWith("")) {
             text += "\n";
         }
@@ -1232,7 +1257,7 @@ public class LRCEditor extends javax.swing.JFrame {
                 }
             }
 
-            // Add new lyric to lstModel
+            // Add new lyric to model
             lstModel.addElement(newLyric);
         }
 
@@ -1262,13 +1287,19 @@ public class LRCEditor extends javax.swing.JFrame {
             }
 
             // Get timestamp
-            Duration timestamp = stringToDuration(value);
+            Timestamp timestamp = stringToTimestamp(value);
 
             // Check if any timestamp would be negative
             if (!addition) {
+                // Set response as -1 so confirm dialog shows up
                 int response = -1;
+
+                // Loop through model
                 for (int i = 0; i < lstModel.size(); i++) {
+                    // Get timestamp
                     Lyric lyric = lstModel.getElementAt(i);
+
+                    // If timestamp is negative
                     if (lyric.getTimestamp().compareTo(timestamp) < 0) {
                         // If confirm dialog wasn't shown yet
                         if (response == -1) {
@@ -1297,8 +1328,29 @@ public class LRCEditor extends javax.swing.JFrame {
             this.lstLyrics.updateUI();
 
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Inserted value is invalid. Make sure it's a valid timestamp operation, like: +00:00.000");
+            JOptionPane.showMessageDialog(null, "Error: Inserted value is invalid. Make sure it's a valid timestamp operation, like: +00:00.000");
         }
+    }
+
+    /**
+     * Sort model's lyrics by timestamps
+     */
+    private void sortLyrics() {
+        List<Lyric> lyrics = new ArrayList<>();
+
+        // Add model's elements to array list
+        for (int i = 0; i < lstModel.size(); i++) {
+            lyrics.add(lstModel.getElementAt(i));
+        }
+
+        // Sort lyrics by timestamps
+        lyrics.sort((var a, var b) -> a.getTimestamp().compareTo(b.getTimestamp()));
+
+        // Clear list model
+        lstModel.clear();
+
+        // Add list to model
+        lstModel.addAll(lyrics);
     }
 
     /**
@@ -1306,7 +1358,7 @@ public class LRCEditor extends javax.swing.JFrame {
      */
     private Lyric stringToLyric(String fullLyric) throws NumberFormatException {
         // Get timestamp without brackets
-        Duration timestamp = stringToDuration(fullLyric.split("\\]", 2)[0]);
+        Timestamp timestamp = stringToTimestamp(fullLyric.split("\\]", 2)[0]);
 
         // Get everything after first close bracket
         String lyric = fullLyric.split("\\]", 2)[1].strip();
@@ -1315,29 +1367,13 @@ public class LRCEditor extends javax.swing.JFrame {
     }
 
     /**
-     * Convert String to Duration
+     * Convert String to Timestamp
      */
-    private Duration stringToDuration(String string) throws NumberFormatException {
+    private Timestamp stringToTimestamp(String string) throws NumberFormatException {
         String[] fullTime = trimBrackets(string).split("[:.]");
-        Duration timestamp = Duration
-                .ofMinutes(Integer.parseInt(fullTime[0]))
-                .plusSeconds(Integer.parseInt(fullTime[1]))
-                .plusMillis(Integer.parseInt(fullTime[2]));
+        Timestamp timestamp = new Timestamp(Integer.parseInt(fullTime[0]), Integer.parseInt(fullTime[1]), Integer.parseInt(fullTime[2]));
 
         return timestamp;
-    }
-
-    /**
-     * Convert Timestamp to String
-     *
-     * @param timestamp Timestamp to convert
-     * @return Timestamp as a string, formatted as 00:00.000
-     */
-    public String timestampToString(Duration timestamp) {
-        if (timestamp == null) {
-            return "";
-        }
-        return String.format("%02d:%02d.%03d", timestamp.toMinutesPart(), timestamp.toSecondsPart(), timestamp.toMillisPart());
     }
 
     /**
@@ -1371,8 +1407,8 @@ public class LRCEditor extends javax.swing.JFrame {
      * @param millis Milliseconds to display as a timestamp
      */
     public void setLblSongTimestampValue(int millis) {
-        var timestamp = Duration.ofMillis(millis);
-        this.lblSongTimestamp.setText(Lyric.timestampDecisecondsToString(timestamp));
+        var timestamp = new Timestamp(millis);
+        this.lblSongTimestamp.setText(timestamp.toShortString());
     }
 
     /**
@@ -1475,6 +1511,7 @@ public class LRCEditor extends javax.swing.JFrame {
     private javax.swing.JMenuItem mniPlay;
     private javax.swing.JMenuItem mniSave;
     private javax.swing.JMenuItem mniSaveAs;
+    private javax.swing.JMenuItem mniSort;
     private javax.swing.JMenuItem mniStop;
     private javax.swing.JMenuItem mniTimestamps;
     private javax.swing.JMenuBar mnuBar;
