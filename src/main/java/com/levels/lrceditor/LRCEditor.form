@@ -164,6 +164,20 @@
             <Property name="toolTipText" type="java.lang.String" value=""/>
           </Properties>
           <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="mniParseHtml">
+              <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="Shift+Ctrl+H"/>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Parse Text From Html"/>
+                <Property name="toolTipText" type="java.lang.String" value="Parse inserted text from a div element to correctly spaced text"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mniParseHtmlActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JPopupMenu$Separator" name="sprMnuTools">
+            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="mniTimestamps">
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
@@ -252,7 +266,7 @@
               <Group type="102" alignment="1" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="lblTitle" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace pref="77" max="32767" attributes="0"/>
                   <Component id="btnOpenLrcFile" min="-2" max="-2" attributes="0"/>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Component id="btnSaveLRC" min="-2" max="-2" attributes="0"/>
@@ -273,7 +287,7 @@
                       <Component id="btnSaveLRC" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="btnOpenLrcFile" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="376" max="32767" attributes="0"/>
+                  <EmptySpace pref="401" max="32767" attributes="0"/>
                   <Component id="pnlSong" min="-2" max="-2" attributes="0"/>
               </Group>
               <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
@@ -364,7 +378,7 @@
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="scrTxaLyrics" alignment="1" pref="691" max="32767" attributes="0"/>
+                              <Component id="scrTxaLyrics" alignment="1" pref="0" max="32767" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="lblSetLyrics" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
@@ -380,7 +394,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="lblSetLyrics" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="scrTxaLyrics" pref="305" max="32767" attributes="0"/>
+                          <Component id="scrTxaLyrics" pref="330" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -452,7 +466,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="txtTimestamp" min="-2" pref="110" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="txtLyric" pref="419" max="32767" attributes="0"/>
+                          <Component id="txtLyric" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="btnSave" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
@@ -462,7 +476,7 @@
                       <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="scrLyrics" pref="691" max="32767" attributes="0"/>
+                              <Component id="scrLyrics" pref="566" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -471,7 +485,7 @@
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace pref="310" max="32767" attributes="0"/>
+                          <EmptySpace pref="335" max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="txtLyric" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="txtTimestamp" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -483,7 +497,7 @@
                       <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" max="-2" attributes="0"/>
-                              <Component id="scrLyrics" pref="295" max="32767" attributes="0"/>
+                              <Component id="scrLyrics" pref="320" max="32767" attributes="0"/>
                               <EmptySpace min="-2" pref="38" max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -520,7 +534,7 @@
                           <Color blue="f3" green="d9" red="ff" type="rgb"/>
                         </Property>
                         <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                          <Connection code="lstModel" type="code"/>
+                          <Connection code="LIST_MODEL" type="code"/>
                         </Property>
                         <Property name="selectionMode" type="int" value="0"/>
                       </Properties>
