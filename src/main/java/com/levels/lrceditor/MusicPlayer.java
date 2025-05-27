@@ -16,7 +16,7 @@ import javazoom.jl.player.advanced.PlaybackListener;
  *
  * @author Leandro Valdearenas
  */
-public class Mp3Player extends PlaybackListener {
+public class MusicPlayer extends PlaybackListener {
 
     // Thread synchronization field
     private final Object threadSync = new Object();
@@ -34,10 +34,10 @@ public class Mp3Player extends PlaybackListener {
     private AdvancedPlayer advancedPlayer;
 
     // Back-reference to LRCEditor
-    private LRCEditor lrcEditor;
+    private final LRCEditor LRC_EDITOR;
 
-    public Mp3Player(LRCEditor lrcEditor) {
-        this.lrcEditor = lrcEditor;
+    public MusicPlayer(LRCEditor lrcEditor) {
+        this.LRC_EDITOR = lrcEditor;
     }
 
     public boolean isPaused() {
@@ -85,9 +85,9 @@ public class Mp3Player extends PlaybackListener {
         if (this.song != null) {
             currentFrame = 0;
             currentMillis = 0;
-            lrcEditor.setSldPlaybackMaximum(song.getFrameCount());
-            lrcEditor.setSldPlaybackValue(0);
-            lrcEditor.enableMp3Player();
+            LRC_EDITOR.setSldPlaybackMaximum(song.getFrameCount());
+            LRC_EDITOR.setSldPlaybackValue(0);
+            LRC_EDITOR.enableMusicPlayer();
         }
     }
 
@@ -117,7 +117,7 @@ public class Mp3Player extends PlaybackListener {
                 startSongSliderThread();
 
             } catch (FileNotFoundException | JavaLayerException e) {
-                Logger.getLogger(Mp3Player.class.getName()).log(Level.INFO, "An error has occurred while trying to play song: {0}", e.getMessage());
+                Logger.getLogger(MusicPlayer.class.getName()).log(Level.INFO, "An error has occurred while trying to play song: {0}", e.getMessage());
             }
         }
     }
@@ -125,7 +125,7 @@ public class Mp3Player extends PlaybackListener {
     public void endSong() {
         pauseSong();
         resetValues();
-        lrcEditor.setLblSongTimestampValue(0);
+        LRC_EDITOR.setLblSongTimestampValue(0);
     }
 
     private void resetValues() {
@@ -133,8 +133,8 @@ public class Mp3Player extends PlaybackListener {
         hasFinished = true;
         currentFrame = 0;
         currentMillis = 0;
-        lrcEditor.setSldPlaybackValue(0);
-        lrcEditor.enablePlay();
+        LRC_EDITOR.setSldPlaybackValue(0);
+        LRC_EDITOR.enablePlay();
     }
 
     // START MUSIC THREAD
@@ -155,7 +155,7 @@ public class Mp3Player extends PlaybackListener {
                 }
 
             } catch (JavaLayerException e) {
-                Logger.getLogger(Mp3Player.class.getName()).log(Level.INFO, "An error has occurred while trying to play music file: {0}", e.getMessage());
+                Logger.getLogger(MusicPlayer.class.getName()).log(Level.INFO, "An error has occurred while trying to play music file: {0}", e.getMessage());
             }
         }).start();
     }
@@ -169,7 +169,7 @@ public class Mp3Player extends PlaybackListener {
                 }
 
             } catch (InterruptedException e) {
-                Logger.getLogger(Mp3Player.class.getName()).log(Level.INFO, "An error has occurred while trying to set up song slider: {0}", e.getMessage());
+                Logger.getLogger(MusicPlayer.class.getName()).log(Level.INFO, "An error has occurred while trying to set up song slider: {0}", e.getMessage());
             }
         }
 
@@ -183,12 +183,12 @@ public class Mp3Player extends PlaybackListener {
             currentMillis += 50;
             
             // Update current timestamp  UI
-            lrcEditor.setLblSongTimestampValue(currentMillis);
+            LRC_EDITOR.setLblSongTimestampValue(currentMillis);
             
             var calculatedFrame = (int) (currentMillis * song.getFrameRatePerMillis());
 
             // Update slider UI
-            lrcEditor.setSldPlaybackValue(calculatedFrame);
+            LRC_EDITOR.setSldPlaybackValue(calculatedFrame);
         }, 50, 50, TimeUnit.MILLISECONDS);
     }
 

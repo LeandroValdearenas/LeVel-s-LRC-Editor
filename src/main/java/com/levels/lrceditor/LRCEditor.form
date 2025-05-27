@@ -93,29 +93,29 @@
             <Property name="text" type="java.lang.String" value="Song"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="mniOpenMp3">
+            <MenuItem class="javax.swing.JMenuItem" name="mniOpenSong">
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
                   <KeyStroke key="Ctrl+M"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Open MP3 File..."/>
-                <Property name="toolTipText" type="java.lang.String" value="Open an .mp3 file to start playing while editing"/>
+                <Property name="text" type="java.lang.String" value="Open Song..."/>
+                <Property name="toolTipText" type="java.lang.String" value="Open a song file to start playing while editing"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mniOpenMp3ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mniOpenSongActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="mniClearMp3">
+            <MenuItem class="javax.swing.JMenuItem" name="mniClearSong">
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
                   <KeyStroke key="Shift+Ctrl+M"/>
                 </Property>
                 <Property name="text" type="java.lang.String" value="Clear Song"/>
-                <Property name="toolTipText" type="java.lang.String" value="Remove song currently being played in the mp3 player"/>
+                <Property name="toolTipText" type="java.lang.String" value="Remove song currently being played in the song player"/>
                 <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mniClearMp3ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mniClearSongActionPerformed"/>
               </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JPopupMenu$Separator" name="sprMnuSong">
@@ -520,7 +520,7 @@
                           <Color blue="f3" green="d9" red="ff" type="rgb"/>
                         </Property>
                         <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                          <Connection code="lstModel" type="code"/>
+                          <Connection code="LIST_MODEL" type="code"/>
                         </Property>
                         <Property name="selectionMode" type="int" value="0"/>
                       </Properties>
@@ -597,7 +597,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
                       <EmptySpace min="-2" max="-2" attributes="0"/>
-                      <Component id="btnOpenMp3File" min="-2" pref="113" max="-2" attributes="0"/>
+                      <Component id="btnOpenSong" min="-2" pref="113" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
                       <Component id="btnPlaySong" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -623,7 +623,7 @@
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="sldPlayback" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="lblSongLength" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="btnOpenMp3File" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="btnOpenSong" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="lblSongTimestamp" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -659,7 +659,7 @@
                 <Property name="text" type="java.lang.String" value="00:00.0"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JButton" name="btnOpenMp3File">
+            <Component class="javax.swing.JButton" name="btnOpenSong">
               <Properties>
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                   <Connection component="btnPlaySong" name="background" type="property"/>
@@ -667,11 +667,11 @@
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                   <Connection component="btnPlaySong" name="foreground" type="property"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Open MP3 File"/>
-                <Property name="toolTipText" type="java.lang.String" value="Open a .mp3 file to play it while editing"/>
+                <Property name="text" type="java.lang.String" value="Open Song"/>
+                <Property name="toolTipText" type="java.lang.String" value="Open a song file to play it while editing"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnOpenMp3FileActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnOpenSongActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JButton" name="btnPlaySong">

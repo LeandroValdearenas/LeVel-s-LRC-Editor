@@ -21,7 +21,11 @@ public class Song {
 
     public Song(String absolutePath) throws Exception {
         this.absolutePath = absolutePath;
-        setValuesFromMp3();
+        if (absolutePath.endsWith(".mp3")) {
+            setValuesFromMp3();
+        } else if (absolutePath.endsWith(".opus")) {
+            setValuesFromOpus();
+        }
     }
 
     public String getAbsolutePath() {
@@ -39,7 +43,7 @@ public class Song {
     public int getFrameCount() {
         return frameCount;
     }
-    
+
     public double getFrameRatePerMillis() {
         return frameRatePerMillis;
     }
@@ -52,6 +56,9 @@ public class Song {
                 mp3File.getLengthInSeconds() / 60,
                 mp3File.getLengthInSeconds() % 60,
                 mp3File.getLengthInMilliseconds() % 1000 / 100);
+    }
+
+    private void setValuesFromOpus() {
     }
 
 }

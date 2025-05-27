@@ -25,26 +25,26 @@ public class LRCEditor extends javax.swing.JFrame {
 
     // Extensions
     private final FileNameExtensionFilter LRC_EXTENSION = new FileNameExtensionFilter("Lyric File (.lrc)", "lrc");
-    private final FileNameExtensionFilter MP3_EXTENSION = new FileNameExtensionFilter("MP3 File (.mp3)", "mp3");
+    private final FileNameExtensionFilter SONG_EXTENSIONS = new FileNameExtensionFilter("Song Files (.mp3 / .opus)", "mp3", "opus");
 
-    // Paths
-    private String lrcPath;
-
-    // MP3 Player
-    private Mp3Player mp3Player;
-
-    // Selected Lyric (for editing)
-    private Lyric selectedLyric;
+    // Music Player
+    private final MusicPlayer MUSIC_PLAYER;
 
     // Default List Model for the Lyrics
-    private DefaultListModel<Lyric> lstModel;
+    private final DefaultListModel<Lyric> LIST_MODEL;
+    
+    // Paths
+    private String lrcPath;
+    
+    // Selected Lyric (for editing)
+    private Lyric selectedLyric;
 
     /**
      * Creates new form LRCEditor
      */
     public LRCEditor() {
-        this.mp3Player = new Mp3Player(this);
-        this.lstModel = new DefaultListModel();
+        this.MUSIC_PLAYER = new MusicPlayer(this);
+        this.LIST_MODEL = new DefaultListModel();
         initComponents();
     }
 
@@ -78,7 +78,7 @@ public class LRCEditor extends javax.swing.JFrame {
         pnlSong = new javax.swing.JPanel();
         sldPlayback = new javax.swing.JSlider();
         lblSongLength = new javax.swing.JLabel();
-        btnOpenMp3File = new javax.swing.JButton();
+        btnOpenSong = new javax.swing.JButton();
         btnPlaySong = new javax.swing.JButton();
         btnPauseSong = new javax.swing.JButton();
         lblSongTimestamp = new javax.swing.JLabel();
@@ -90,8 +90,8 @@ public class LRCEditor extends javax.swing.JFrame {
         mniSave = new javax.swing.JMenuItem();
         mniSaveAs = new javax.swing.JMenuItem();
         mnuSong = new javax.swing.JMenu();
-        mniOpenMp3 = new javax.swing.JMenuItem();
-        mniClearMp3 = new javax.swing.JMenuItem();
+        mniOpenSong = new javax.swing.JMenuItem();
+        mniClearSong = new javax.swing.JMenuItem();
         sprMnuSong = new javax.swing.JPopupMenu.Separator();
         mniPlay = new javax.swing.JMenuItem();
         mniPause = new javax.swing.JMenuItem();
@@ -197,7 +197,7 @@ public class LRCEditor extends javax.swing.JFrame {
         lstLyrics.setBackground(new java.awt.Color(11, 116, 185));
         lstLyrics.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         lstLyrics.setForeground(new java.awt.Color(255, 217, 243));
-        lstLyrics.setModel(lstModel);
+        lstLyrics.setModel(LIST_MODEL);
         lstLyrics.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         lstLyrics.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
@@ -302,13 +302,13 @@ public class LRCEditor extends javax.swing.JFrame {
         lblSongLength.setForeground(new java.awt.Color(8, 6, 65));
         lblSongLength.setText("00:00.0");
 
-        btnOpenMp3File.setBackground(btnPlaySong.getBackground());
-        btnOpenMp3File.setForeground(btnPlaySong.getForeground());
-        btnOpenMp3File.setText("Open MP3 File");
-        btnOpenMp3File.setToolTipText("Open a .mp3 file to play it while editing");
-        btnOpenMp3File.addActionListener(new java.awt.event.ActionListener() {
+        btnOpenSong.setBackground(btnPlaySong.getBackground());
+        btnOpenSong.setForeground(btnPlaySong.getForeground());
+        btnOpenSong.setText("Open Song");
+        btnOpenSong.setToolTipText("Open a song file to play it while editing");
+        btnOpenSong.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnOpenMp3FileActionPerformed(evt);
+                btnOpenSongActionPerformed(evt);
             }
         });
 
@@ -341,7 +341,7 @@ public class LRCEditor extends javax.swing.JFrame {
             pnlSongLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlSongLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(btnOpenMp3File, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnOpenSong, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnPlaySong)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -365,7 +365,7 @@ public class LRCEditor extends javax.swing.JFrame {
                         .addGroup(pnlSongLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(sldPlayback, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblSongLength)
-                            .addComponent(btnOpenMp3File)
+                            .addComponent(btnOpenSong)
                             .addComponent(lblSongTimestamp))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -453,26 +453,26 @@ public class LRCEditor extends javax.swing.JFrame {
 
         mnuSong.setText("Song");
 
-        mniOpenMp3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_M, java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        mniOpenMp3.setText("Open MP3 File...");
-        mniOpenMp3.setToolTipText("Open an .mp3 file to start playing while editing");
-        mniOpenMp3.addActionListener(new java.awt.event.ActionListener() {
+        mniOpenSong.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_M, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        mniOpenSong.setText("Open Song...");
+        mniOpenSong.setToolTipText("Open a song file to start playing while editing");
+        mniOpenSong.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mniOpenMp3ActionPerformed(evt);
+                mniOpenSongActionPerformed(evt);
             }
         });
-        mnuSong.add(mniOpenMp3);
+        mnuSong.add(mniOpenSong);
 
-        mniClearMp3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_M, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
-        mniClearMp3.setText("Clear Song");
-        mniClearMp3.setToolTipText("Remove song currently being played in the mp3 player");
-        mniClearMp3.setEnabled(false);
-        mniClearMp3.addActionListener(new java.awt.event.ActionListener() {
+        mniClearSong.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_M, java.awt.event.InputEvent.SHIFT_DOWN_MASK | java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        mniClearSong.setText("Clear Song");
+        mniClearSong.setToolTipText("Remove song currently being played in the song player");
+        mniClearSong.setEnabled(false);
+        mniClearSong.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mniClearMp3ActionPerformed(evt);
+                mniClearSongActionPerformed(evt);
             }
         });
-        mnuSong.add(mniClearMp3);
+        mnuSong.add(mniClearSong);
         mnuSong.add(sprMnuSong);
 
         mniPlay.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_DOWN_MASK));
@@ -576,14 +576,14 @@ public class LRCEditor extends javax.swing.JFrame {
 
     // ---> SONG
 
-    private void mniOpenMp3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniOpenMp3ActionPerformed
-        openMp3File();
-    }//GEN-LAST:event_mniOpenMp3ActionPerformed
+    private void mniOpenSongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniOpenSongActionPerformed
+        openSong();
+    }//GEN-LAST:event_mniOpenSongActionPerformed
 
-    private void mniClearMp3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniClearMp3ActionPerformed
-        this.mp3Player.loadSong(null);
-        disableMp3Actions();
-    }//GEN-LAST:event_mniClearMp3ActionPerformed
+    private void mniClearSongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniClearSongActionPerformed
+        this.MUSIC_PLAYER.loadSong(null);
+        disableMusicPlayer();
+    }//GEN-LAST:event_mniClearSongActionPerformed
 
     private void mniPlayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniPlayActionPerformed
         playSong();
@@ -594,7 +594,7 @@ public class LRCEditor extends javax.swing.JFrame {
     }//GEN-LAST:event_mniPauseActionPerformed
 
     private void mniStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mniStopActionPerformed
-        this.mp3Player.endSong();
+        this.MUSIC_PLAYER.endSong();
     }//GEN-LAST:event_mniStopActionPerformed
 
     // ---> TOOLS
@@ -650,7 +650,7 @@ public class LRCEditor extends javax.swing.JFrame {
                 int selectedIndex = lstLyrics.getSelectedIndex();
 
                 // If lyric is not last
-                if (++selectedIndex < lstModel.size()) {
+                if (++selectedIndex < LIST_MODEL.size()) {
                     // Select next
                     lstLyrics.setSelectedIndex(selectedIndex);
                 }
@@ -683,10 +683,13 @@ public class LRCEditor extends javax.swing.JFrame {
             // Back space, Left key, Right key
             case KeyEvent.VK_BACK_SPACE, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT -> {
                 // If a song is selected and paused, resume it.
-                if (mp3Player.hasSelectedSong() && mp3Player.isPaused()) {
+                if (MUSIC_PLAYER.hasSelectedSong() && MUSIC_PLAYER.isPaused()) {
                     playSong();
                 }
             }
+
+
+
         }
     }//GEN-LAST:event_lstLyricsKeyReleased
 
@@ -694,10 +697,10 @@ public class LRCEditor extends javax.swing.JFrame {
         try {
             var savedLyric = new Lyric(stringToTimestamp(txtTimestamp.getText()), txtLyric.getText());
             var selectedIndex = lstLyrics.getSelectedIndex();
-            if (!lstModel.isEmpty()) {
+            if (!LIST_MODEL.isEmpty()) {
                 // Loop through model's lyrics
-                for (int i = 0; i < lstModel.size(); i++) {
-                    Lyric lyric = lstModel.getElementAt(i);
+                for (int i = 0; i < LIST_MODEL.size(); i++) {
+                    Lyric lyric = LIST_MODEL.getElementAt(i);
 
                     if (lyric.getTimestamp() == null) {
                         // If timestamp is null
@@ -721,21 +724,21 @@ public class LRCEditor extends javax.swing.JFrame {
 
                         // If inserted timestamp is smaller, add the lyric in that position
                         if (difference > 0) {
-                            lstModel.add(i, savedLyric);
+                            LIST_MODEL.add(i, savedLyric);
                             break;
                         }
                     }
 
                     // If there is nothing after, add the lyric at the end
-                    if (i + 1 == lstModel.size()) {
-                        lstModel.addElement(savedLyric);
+                    if (i + 1 == LIST_MODEL.size()) {
+                        LIST_MODEL.addElement(savedLyric);
                     }
                 }
 
                 // Clear selection
                 this.lstLyrics.clearSelection();
             } else {
-                lstModel.addElement(savedLyric);
+                LIST_MODEL.addElement(savedLyric);
             }
 
             // Reset save buttons and other functions
@@ -752,11 +755,11 @@ public class LRCEditor extends javax.swing.JFrame {
         removeLyric();
     }//GEN-LAST:event_btnDeleteActionPerformed
 
-    // -> MP3 PLAYER
+    // -> SONG PLAYER
 
-    private void btnOpenMp3FileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpenMp3FileActionPerformed
-        openMp3File();
-    }//GEN-LAST:event_btnOpenMp3FileActionPerformed
+    private void btnOpenSongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOpenSongActionPerformed
+        openSong();
+    }//GEN-LAST:event_btnOpenSongActionPerformed
 
     private void btnPlaySongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPlaySongActionPerformed
         playSong();
@@ -768,7 +771,7 @@ public class LRCEditor extends javax.swing.JFrame {
 
     private void sldPlaybackMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_sldPlaybackMousePressed
         if (sldPlayback.isEnabled()) {
-            this.mp3Player.pauseSong();
+            this.MUSIC_PLAYER.pauseSong();
             enablePlay();
         }
     }//GEN-LAST:event_sldPlaybackMousePressed
@@ -779,7 +782,7 @@ public class LRCEditor extends javax.swing.JFrame {
             JSlider source = (JSlider) evt.getSource();
 
             int frame = source.getValue();
-            int millis = ((int) (frame / (this.mp3Player.getSong().getFrameRatePerMillis())) / 10) * 10;
+            int millis = ((int) (frame / (this.MUSIC_PLAYER.getSong().getFrameRatePerMillis())) / 10) * 10;
             setSongPosition(millis, frame);
         }
     }//GEN-LAST:event_sldPlaybackMouseReleased
@@ -802,19 +805,19 @@ public class LRCEditor extends javax.swing.JFrame {
 
     // FUNCTIONS:
     /**
-     * Select and play MP3 file
+     * Select and play song file
      */
-    private void openMp3File() {
+    private void openSong() {
         try {
-            this.fchOpen.setDialogTitle("Select MP3 file");
-            this.fchOpen.setFileFilter(MP3_EXTENSION);
-            this.mp3Player.loadSong(new Song(selectFile()));
-            this.sldPlayback.setToolTipText(this.mp3Player.getSong().getAbsolutePath());
-            this.lblSongLength.setText(this.mp3Player.getSong().getLength());
+            this.fchOpen.setDialogTitle("Select MP3/OPUS file");
+            this.fchOpen.setFileFilter(SONG_EXTENSIONS);
+            this.MUSIC_PLAYER.loadSong(new Song(selectFile()));
+            this.sldPlayback.setToolTipText(this.MUSIC_PLAYER.getSong().getAbsolutePath());
+            this.lblSongLength.setText(this.MUSIC_PLAYER.getSong().getLength());
 
         } catch (TaskCancelledException e) {
-            // If a song has been selected, re-enable mp3 player buttons
-            if (mp3Player.hasSelectedSong()) {
+            // If a song has been selected, re-enable music player buttons
+            if (MUSIC_PLAYER.hasSelectedSong()) {
                 enablePlay();
             }
         } catch (Exception e) {
@@ -836,7 +839,7 @@ public class LRCEditor extends javax.swing.JFrame {
             tabMain.setSelectedIndex(1);
 
             // Clear the list and read the file
-            this.lstModel.clear();
+            this.LIST_MODEL.clear();
             readLrcFile(this.lrcPath);
             resetSaveButtons();
 
@@ -885,7 +888,7 @@ public class LRCEditor extends javax.swing.JFrame {
 
                 // Save song length if declared
                 if (data.startsWith("[length: ")) {
-                    this.mp3Player.addSongLength(data.split("\\[length:", 2)[1].split("\\]", 2)[0].strip());
+                    this.MUSIC_PLAYER.addSongLength(data.split("\\[length:", 2)[1].split("\\]", 2)[0].strip());
                 }
             }
         }
@@ -894,7 +897,7 @@ public class LRCEditor extends javax.swing.JFrame {
         lyrics.sort((var a, var b) -> a.getTimestamp().compareTo(b.getTimestamp()));
 
         // Add list to model
-        lstModel.addAll(lyrics);
+        LIST_MODEL.addAll(lyrics);
     }
 
     /**
@@ -902,7 +905,7 @@ public class LRCEditor extends javax.swing.JFrame {
      */
     private void resetLrc() {
         this.lrcPath = null;
-        this.lstModel.clear();
+        this.LIST_MODEL.clear();
         this.tabMain.setSelectedIndex(0);
         this.txaLyrics.setText("");
         selectLyric(null);
@@ -917,7 +920,7 @@ public class LRCEditor extends javax.swing.JFrame {
             // If lrcPath is null, save as new file
             if (this.lrcPath == null) {
                 // Get current song's path
-                String songPath = this.mp3Player.getSong().getAbsolutePath();
+                String songPath = this.MUSIC_PLAYER.getSong().getAbsolutePath();
 
                 // If songPath isn't null
                 if (songPath != null) {
@@ -927,6 +930,7 @@ public class LRCEditor extends javax.swing.JFrame {
                     // If user confirmed, set songPath as lrcPath (with .lrc extension) and save
                     if (confirmResult == JOptionPane.YES_OPTION) {
                         // Set lrcPath to current song's path and name (but with lrc extension)
+                        // /!\ WIP
                         this.lrcPath = songPath.replace(".mp3", ".lrc");
 
                         // Save .lrc file
@@ -971,11 +975,11 @@ public class LRCEditor extends javax.swing.JFrame {
      * Save information to file
      */
     private void saveToFile(String path) throws IOException {
-        String length = this.mp3Player.getSong().getLength();
+        String length = this.MUSIC_PLAYER.getSong().getLength();
 
         // If length is null, use last lyric's timestamp
         if (length == null) {
-            var timestamp = lstModel.lastElement().getTimestamp();
+            var timestamp = LIST_MODEL.lastElement().getTimestamp();
             if (timestamp == null) {
                 throw new IOException("Last lyric in list is missing a timestamp.");
             }
@@ -989,8 +993,8 @@ public class LRCEditor extends javax.swing.JFrame {
             myWriter.write("[length: " + length + "]\n[tool: LeVel's LRC Editor]\n");
 
             // Write lyrics with timestamps
-            for (int i = 0; i < this.lstModel.size(); i++) {
-                myWriter.write(this.lstModel.elementAt(i).toLrcString());
+            for (int i = 0; i < this.LIST_MODEL.size(); i++) {
+                myWriter.write(this.LIST_MODEL.elementAt(i).toLrcString());
             }
         }
 
@@ -1021,7 +1025,7 @@ public class LRCEditor extends javax.swing.JFrame {
      */
     private void removeLyric() {
         // Remove selected lyric
-        lstModel.removeElement(selectedLyric);
+        LIST_MODEL.removeElement(selectedLyric);
         this.lstLyrics.clearSelection();
         resetSaveButtons();
     }
@@ -1031,11 +1035,11 @@ public class LRCEditor extends javax.swing.JFrame {
      */
     private void resetSaveButtons() {
         // Enable if model has items, otherwise disable
-        boolean enabled = !lstModel.isEmpty();
+        boolean enabled = !LIST_MODEL.isEmpty();
 
         // Disable if any timestamp is null
         if (enabled) {
-            for (var l : lstModel.toArray()) {
+            for (var l : LIST_MODEL.toArray()) {
                 if (((Lyric) l).getTimestamp() == null) {
                     enabled = false;
                     break;
@@ -1056,12 +1060,12 @@ public class LRCEditor extends javax.swing.JFrame {
      */
     private void togglePause() {
         // If no song has been selected, return
-        if (!mp3Player.hasSelectedSong()) {
+        if (!MUSIC_PLAYER.hasSelectedSong()) {
             return;
         }
 
         // If song is paused, resume. Otherwise, pause.
-        if (mp3Player.isPaused()) {
+        if (MUSIC_PLAYER.isPaused()) {
             playSong();
         } else {
             pauseSong();
@@ -1072,7 +1076,7 @@ public class LRCEditor extends javax.swing.JFrame {
      * Play song and enable pause button
      */
     private void playSong() {
-        this.mp3Player.playSong();
+        this.MUSIC_PLAYER.playSong();
 
         // Enable pause, disable play
         enablePause();
@@ -1082,7 +1086,7 @@ public class LRCEditor extends javax.swing.JFrame {
      * Pause song and enable play button
      */
     private void pauseSong() {
-        this.mp3Player.pauseSong();
+        this.MUSIC_PLAYER.pauseSong();
 
         // Enable play, disable pause
         enablePlay();
@@ -1097,12 +1101,12 @@ public class LRCEditor extends javax.swing.JFrame {
         // If lyric is selected
         if (lstLyrics.getSelectedIndex() != -1) {
             // Get current timestamp
-            var timestamp = new Timestamp(this.mp3Player.getCurrentMillis());
+            var timestamp = new Timestamp(this.MUSIC_PLAYER.getCurrentMillis());
 
-            var wasEmpty = lstModel.get(selectedIndex).getTimestamp() == null;
+            var wasEmpty = LIST_MODEL.get(selectedIndex).getTimestamp() == null;
 
             // Assign timestamp to currently selected lyric
-            lstModel.get(selectedIndex).setTimestamp(timestamp);
+            LIST_MODEL.get(selectedIndex).setTimestamp(timestamp);
 
             if (wasEmpty) {
                 // Make sure to enable save buttons
@@ -1110,7 +1114,7 @@ public class LRCEditor extends javax.swing.JFrame {
             }
 
             // If there is a next lyric
-            if (selectedIndex + 1 < lstModel.size()) {
+            if (selectedIndex + 1 < LIST_MODEL.size()) {
                 // Make sure the next 2 lyrics are visible
                 lstLyrics.ensureIndexIsVisible(selectedIndex + 2);
             } else {
@@ -1128,11 +1132,11 @@ public class LRCEditor extends javax.swing.JFrame {
 
         // If lyric is selected
         if (lstLyrics.getSelectedIndex() != -1) {
-            var timestamp = lstModel.get(selectedIndex).getTimestamp();
+            var timestamp = LIST_MODEL.get(selectedIndex).getTimestamp();
             if (timestamp != null) {
                 // Set millis and frame
                 var millis = (int) (timestamp.toMillis() / 10) * 10;
-                var frame = (int) (millis * this.mp3Player.getSong().getFrameRatePerMillis());
+                var frame = (int) (millis * this.MUSIC_PLAYER.getSong().getFrameRatePerMillis());
 
                 setSongPosition(millis, frame);
             }
@@ -1143,7 +1147,7 @@ public class LRCEditor extends javax.swing.JFrame {
      * Skip song back
      */
     private void skipSongBack(int skip) {
-        var millis = this.mp3Player.getCurrentMillis();
+        var millis = this.MUSIC_PLAYER.getCurrentMillis();
 
         // Skip back
         millis -= skip;
@@ -1154,7 +1158,7 @@ public class LRCEditor extends javax.swing.JFrame {
         }
 
         // Set frame
-        var frame = (int) (millis * this.mp3Player.getSong().getFrameRatePerMillis());
+        var frame = (int) (millis * this.MUSIC_PLAYER.getSong().getFrameRatePerMillis());
 
         setSongPosition(millis, frame);
     }
@@ -1163,13 +1167,13 @@ public class LRCEditor extends javax.swing.JFrame {
      * Skip song forward
      */
     private void skipSongForward(int skip) {
-        var millis = this.mp3Player.getCurrentMillis();
+        var millis = this.MUSIC_PLAYER.getCurrentMillis();
 
         // Skip song forward
         millis += skip;
 
         // Get maximum as millis
-        var maxMillis = (int) (this.sldPlayback.getMaximum() / this.mp3Player.getSong().getFrameRatePerMillis());
+        var maxMillis = (int) (this.sldPlayback.getMaximum() / this.MUSIC_PLAYER.getSong().getFrameRatePerMillis());
 
         // If timestamp would be higher than maximum, set to maximum
         if (millis > maxMillis) {
@@ -1177,7 +1181,7 @@ public class LRCEditor extends javax.swing.JFrame {
         }
 
         // Set frame
-        var frame = (int) (millis * this.mp3Player.getSong().getFrameRatePerMillis());
+        var frame = (int) (millis * this.MUSIC_PLAYER.getSong().getFrameRatePerMillis());
 
         setSongPosition(millis, frame);
     }
@@ -1186,12 +1190,12 @@ public class LRCEditor extends javax.swing.JFrame {
      * Set song position
      */
     private void setSongPosition(int millis, int frame) {
-        if (!this.mp3Player.hasSelectedSong()) {
+        if (!this.MUSIC_PLAYER.hasSelectedSong()) {
             return;
         }
 
-        if (!this.mp3Player.isPaused()) {
-            this.mp3Player.pauseSong();
+        if (!this.MUSIC_PLAYER.isPaused()) {
+            this.MUSIC_PLAYER.pauseSong();
             enablePlay();
         }
 
@@ -1199,9 +1203,9 @@ public class LRCEditor extends javax.swing.JFrame {
         setLblSongTimestampValue(millis);
         setSldPlaybackValue(frame);
 
-        // Update mp3 player's current frame and millis
-        this.mp3Player.setCurrentMillis(millis);
-        this.mp3Player.setCurrentFrame(frame);
+        // Update music player's current frame and millis
+        this.MUSIC_PLAYER.setCurrentMillis(millis);
+        this.MUSIC_PLAYER.setCurrentFrame(frame);
     }
 
     /**
@@ -1212,8 +1216,8 @@ public class LRCEditor extends javax.swing.JFrame {
         txaLyrics.setText("");
 
         // Loop through lstModel and write lines into text area
-        for (int i = 0; i < this.lstModel.size(); i++) {
-            var line = this.lstModel.elementAt(i).getLyric() + (i + 1 < this.lstModel.size() ? "\n" : "");
+        for (int i = 0; i < this.LIST_MODEL.size(); i++) {
+            var line = this.LIST_MODEL.elementAt(i).getLyric() + (i + 1 < this.LIST_MODEL.size() ? "\n" : "");
             txaLyrics.setText(txaLyrics.getText().concat(line));
         }
     }
@@ -1231,11 +1235,11 @@ public class LRCEditor extends javax.swing.JFrame {
         }
 
         // Save current lyrics and get text area's lines
-        var savedLyrics = lstModel.toArray();
+        var savedLyrics = LIST_MODEL.toArray();
         var lines = text.lines().toList();
 
         // Clear List Model
-        lstModel.clear();
+        LIST_MODEL.clear();
 
         // Loop through text area's lines
         for (var line : lines) {
@@ -1258,7 +1262,7 @@ public class LRCEditor extends javax.swing.JFrame {
             }
 
             // Add new lyric to model
-            lstModel.addElement(newLyric);
+            LIST_MODEL.addElement(newLyric);
         }
 
         // Reset buttons and other functions
@@ -1295,9 +1299,9 @@ public class LRCEditor extends javax.swing.JFrame {
                 int response = -1;
 
                 // Loop through model
-                for (int i = 0; i < lstModel.size(); i++) {
+                for (int i = 0; i < LIST_MODEL.size(); i++) {
                     // Get timestamp
-                    Lyric lyric = lstModel.getElementAt(i);
+                    Lyric lyric = LIST_MODEL.getElementAt(i);
 
                     // If timestamp is negative
                     if (lyric.getTimestamp().compareTo(timestamp) < 0) {
@@ -1320,8 +1324,8 @@ public class LRCEditor extends javax.swing.JFrame {
             }
 
             // Perform addition/substraction
-            for (int i = 0; i < lstModel.size(); i++) {
-                lstModel.getElementAt(i).moveTimestamp(timestamp, addition);
+            for (int i = 0; i < LIST_MODEL.size(); i++) {
+                LIST_MODEL.getElementAt(i).moveTimestamp(timestamp, addition);
             }
 
             // Update lyrics list UI
@@ -1339,18 +1343,18 @@ public class LRCEditor extends javax.swing.JFrame {
         List<Lyric> lyrics = new ArrayList<>();
 
         // Add model's elements to array list
-        for (int i = 0; i < lstModel.size(); i++) {
-            lyrics.add(lstModel.getElementAt(i));
+        for (int i = 0; i < LIST_MODEL.size(); i++) {
+            lyrics.add(LIST_MODEL.getElementAt(i));
         }
 
         // Sort lyrics by timestamps
         lyrics.sort((var a, var b) -> a.getTimestamp().compareTo(b.getTimestamp()));
 
         // Clear list model
-        lstModel.clear();
+        LIST_MODEL.clear();
 
         // Add list to model
-        lstModel.addAll(lyrics);
+        LIST_MODEL.addAll(lyrics);
     }
 
     /**
@@ -1412,11 +1416,11 @@ public class LRCEditor extends javax.swing.JFrame {
     }
 
     /**
-     * Enable mp3 actions and slider (pause remains disabled)
+     * Enable music actions and slider (pause remains disabled)
      */
-    public void enableMp3Player() {
+    public void enableMusicPlayer() {
         this.sldPlayback.setEnabled(true);
-        this.mniClearMp3.setEnabled(true);
+        this.mniClearSong.setEnabled(true);
         enablePlay();
     }
 
@@ -1443,14 +1447,14 @@ public class LRCEditor extends javax.swing.JFrame {
     }
 
     /**
-     * Disable all mp3 player buttons and slider
+     * Disable all music player buttons and slider
      */
-    private void disableMp3Actions() {
+    private void disableMusicPlayer() {
         this.btnPlaySong.setEnabled(false);
         this.btnPauseSong.setEnabled(false);
         this.sldPlayback.setValue(0);
         this.sldPlayback.setEnabled(false);
-        this.mniClearMp3.setEnabled(false);
+        this.mniClearSong.setEnabled(false);
         this.mniPlay.setEnabled(false);
         this.mniPause.setEnabled(false);
         this.mniStop.setEnabled(false);
@@ -1491,7 +1495,7 @@ public class LRCEditor extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnOpenLrcFile;
-    private javax.swing.JButton btnOpenMp3File;
+    private javax.swing.JButton btnOpenSong;
     private javax.swing.JButton btnPauseSong;
     private javax.swing.JButton btnPlaySong;
     private javax.swing.JButton btnSave;
@@ -1503,10 +1507,10 @@ public class LRCEditor extends javax.swing.JFrame {
     private javax.swing.JLabel lblSongTimestamp;
     private javax.swing.JLabel lblTitle;
     private javax.swing.JList<Lyric> lstLyrics;
-    private javax.swing.JMenuItem mniClearMp3;
+    private javax.swing.JMenuItem mniClearSong;
     private javax.swing.JMenuItem mniNew;
     private javax.swing.JMenuItem mniOpen;
-    private javax.swing.JMenuItem mniOpenMp3;
+    private javax.swing.JMenuItem mniOpenSong;
     private javax.swing.JMenuItem mniPause;
     private javax.swing.JMenuItem mniPlay;
     private javax.swing.JMenuItem mniSave;
